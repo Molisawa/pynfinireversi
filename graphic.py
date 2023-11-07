@@ -355,7 +355,7 @@ def initScreenFeatures(features, screenWidth, screenHeight, squareSize):
     features.screenHeight = screenHeight
     features.squareSize = squareSize
 
-def MenuScreen(ScreenFeatures, frame_count, MenuOptions:MenuOptions, screen_flag, board, nextScreen):
+def MenuScreen(ScreenFeatures, frame_count, MenuOptions: MenuOptions, screen_flag, board, nextScreen):
     clear_background(DARKGREEN)
     draw_text("INFINIREVERSI", 
               int(ScreenFeatures.screenWidth // 2 - measure_text("INFINIREVERSI", 30) // 2),
@@ -372,31 +372,31 @@ def MenuScreen(ScreenFeatures, frame_count, MenuOptions:MenuOptions, screen_flag
     draw_rectangle_rec(MenuOptions.editorButton, LIGHTGRAY)
 
     draw_text("Start",
-            int(MenuOptions.startGameButton.x + MenuOptions.startGameButton.width // 2 - measure_text("Start", 30) // 2),
-            int(MenuOptions.startGameButton.y + MenuOptions.startGameButton.height // 2 - 15), 30, WHITE)
+              int(MenuOptions.startGameButton.x + MenuOptions.startGameButton.width // 2 - measure_text("Start", 30) // 2),
+              int(MenuOptions.startGameButton.y + MenuOptions.startGameButton.height // 2 - 15), 30, WHITE)
     draw_text("Load game",
-            int(MenuOptions.loadGameButton.x + MenuOptions.loadGameButton.width // 2 - measure_text("Load game", 30) // 2),
-            int(MenuOptions.loadGameButton.y + MenuOptions.loadGameButton.height // 2 - 15), 30, WHITE)
+              int(MenuOptions.loadGameButton.x + MenuOptions.loadGameButton.width // 2 - measure_text("Load game", 30) // 2),
+              int(MenuOptions.loadGameButton.y + MenuOptions.loadGameButton.height // 2 - 15), 30, WHITE)
 
     draw_text("Game editor",
-            int(MenuOptions.editorButton.x + MenuOptions.editorButton.width // 2 - measure_text("Game editor", 30) // 2),
-            int(MenuOptions.editorButton.y + MenuOptions.editorButton.height // 2 - 15), 30, WHITE)
+              int(MenuOptions.editorButton.x + MenuOptions.editorButton.width // 2 - measure_text("Game editor", 30) // 2),
+              int(MenuOptions.editorButton.y + MenuOptions.editorButton.height // 2 - 15), 30, WHITE)
 
     draw_text("v1.0",
-            int(ScreenFeatures.screenWidth // 2 - measure_text("v1.0", 30) // 2),
-            int(ScreenFeatures.screenHeight // 2 + 375),
-            15, WHITE)
+              int(ScreenFeatures.screenWidth // 2 - measure_text("v1.0", 30) // 2),
+              int(ScreenFeatures.screenHeight // 2 + 375),
+              15, WHITE)
 
     draw_text("Created by Molisawa",
-            int(ScreenFeatures.screenWidth - measure_text("Created by Molisawa", 30) // 2),
-            int(ScreenFeatures.screenHeight // 2 + 375),
-            15, WHITE)
+              int(ScreenFeatures.screenWidth - measure_text("Created by Molisawa", 30) // 2),
+              int(ScreenFeatures.screenHeight // 2 + 375),
+              15, WHITE)
 
     CheckMenuButtonPressed(MenuOptions, screen_flag, board, nextScreen)
 
-    end_drawing()
-    unload_texture(texture)
-    unload_image(image)
+    # No descargues la textura y la imagen aquí
+    # unload_texture(texture)
+    # unload_image(image)
 
 def EditorScreen(ScreenFeatures, board, piece, screen):
     clear_background(DARKGREEN)

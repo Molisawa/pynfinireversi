@@ -7,9 +7,7 @@ SCREEN_HEIGHT = 800
 
 # Función principal
 def main():
-
     # Inicialización de la música y el tablero
-
     init_audio_device()
     music = load_music_stream("resources/background.mp3")
     play_music_stream(music)
@@ -17,10 +15,11 @@ def main():
     board = Board()  # Tamaño del tablero por defecto
 
     screen = init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Reversi")
+    set_target_fps(60)
 
     screen_flag = ScreenFlag.MENU
-    lastScreen = ScreenFlag.MENU
-    nextScreen = ScreenFlag.MENU
+    last_screen = ScreenFlag.MENU
+    next_screen = ScreenFlag.MENU
 
     filename = ""
     num_of_chars = 0
@@ -28,16 +27,16 @@ def main():
     difficulty = Difficulty.EASY
     custom_board_size = 0
 
-    piece_selected = StateFlags.BLACK_PIECE
+    piece_selected = Piece(StateFlags.BLACK_PIECE)
 
     SQUARE_SIZE = SCREEN_HEIGHT / board.size
 
-    screenFeatures = ScreenFeatures(SCREEN_WIDTH, SCREEN_HEIGHT, SQUARE_SIZE)
+    screen_features = ScreenFeatures(SCREEN_WIDTH, SCREEN_HEIGHT, SQUARE_SIZE)
 
-    menu = getMenu(board, screenFeatures)
-    menu_options = getMenuOptions(screenFeatures)
+    menu = getMenu(board, screen_features)
+    menu_options = getMenuOptions(screen_features)
 
-    while not window_should_close():  # Detect window close button or ESC key
+    while not window_should_close():  # Detectar botón de cierre de la ventana o tecla ESC
         frame_counter = (frame_counter + 1) % 60
         mouse = get_mouse_position()
         clicked = 0
@@ -47,7 +46,7 @@ def main():
         key = get_key_pressed()
 
         while key > 0:
-            if (key >= 32) and (key <= 125) and num_of_chars < 10:
+            if 32 <= key <= 125 and num_of_chars < 10:
                 num_of_chars += 1
                 filename += chr(key)
             key = get_key_pressed()
@@ -61,27 +60,24 @@ def main():
         begin_drawing()
         if screen_flag == ScreenFlag.MENU:
             update_music_stream(music)
-            MenuScreen(screenFeatures, frame_counter, menu_options, screen_flag, board, nextScreen)
+            MenuScreen(screen_features, frame_counter, menu_options, screen_flag, board, next_screen)
         elif screen_flag == ScreenFlag.GAME:
-            lastScreen = ScreenFlag.GAME
-            PlayScreen(board, menu, screenFeatures, screen_flag, mouse, clicked)
+            last_screen = ScreenFlag.GAME
+            PlayScreen(board, menu, screen_features, screen_flag, mouse, clicked)
             draw_fps(10, 10)
         elif screen_flag == ScreenFlag.SAVE:
-            ShowFileSaverScreen(board, screenFeatures, filename, frame_counter, mouse, screen_flag, num_of_chars, lastScreen)
+            ShowFileSaverScreen(board, screen_features, filename, frame_counter, mouse, screen_flag, num_of_chars, last_screen)
         elif screen_flag == ScreenFlag.LOAD:
-            LoadFileScreen(board, screenFeatures, screen_flag)
+            LoadFileScreen(board, screen_features, screen_flag)
         elif screen_flag == ScreenFlag.EDITOR:
-            lastScreen = ScreenFlag.EDITOR
-            EditorScreen(screenFeatures, board, piece_selected, screen_flag)
+            last_screen = ScreenFlag.EDITOR
+            EditorScreen(screen_features, board, piece_selected, screen_flag)
         elif screen_flag == ScreenFlag.CONFIG_GAME:
-            ConfigGameScreen(screenFeatures, board, screen_flag, custom_board_size, difficulty, nextScreen)
+            ConfigGameScreen(screen_features, board, screen_flag, custom_board_size, difficulty, next_screen)
 
         end_drawing()
 
     # ... (código adicional aquí)
-    unload_texture(screen)
-    unload_texture(lastScreen)
-    unload_texture(nextScreen)
     unload_music_stream(music)
     close_audio_device()
     close_window()
