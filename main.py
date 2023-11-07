@@ -42,8 +42,11 @@ def main():
         clicked = 0
         if is_mouse_button_pressed(0):
             clicked = 1
+            print("Mouse clicked at: ", mouse)
+            print("Mouse clicked at: ", clicked)
 
         key = get_key_pressed()
+        print(key, "se presionó")
 
         while key > 0:
             if 32 <= key <= 125 and num_of_chars < 10:
