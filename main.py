@@ -17,9 +17,7 @@ def main():
     screen = init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Reversi")
     set_target_fps(60)
 
-    screen_flag = ScreenFlag.MENU
-    last_screen = ScreenFlag.MENU
-    next_screen = ScreenFlag.MENU
+
     screen_list = [ScreenFlag.MENU]
     next_screen_list = [ScreenFlag.MENU]
     last_screen_list = [ScreenFlag.MENU]
@@ -27,10 +25,17 @@ def main():
     filename = ""
     num_of_chars = 0
     frame_counter = 0
-    difficulty = Difficulty.EASY
-    custom_board_size = 0
+    # difficulty = Difficulty.EASY
+    difficulty_list = [Difficulty.EASY]
+    # custom_board_size = 0
+    custom_board_size = [0]  # Ahora es una lista
+
 
     piece_selected = Piece(StateFlags.BLACK_PIECE)
+    
+    slider = Slider(False, 0.0, 0.0)
+    initSlider(slider)
+
 
     SQUARE_SIZE = SCREEN_HEIGHT / board.size
 
@@ -59,7 +64,6 @@ def main():
             if num_of_chars < 0:
                 num_of_chars = 0
             filename = filename[:-1]
-
         begin_drawing()
         if screen_list[0] == ScreenFlag.MENU:
             update_music_stream(music)
@@ -71,12 +75,12 @@ def main():
         elif screen_list[0] == ScreenFlag.SAVE:
             screen_list[0], next_screen_list[0] = ShowFileSaverScreen(board, screen_features, filename, frame_counter, mouse, screen_list, num_of_chars, last_screen_list[0])
         elif screen_list[0] == ScreenFlag.LOAD:
-            LoadFileScreen(board, screen_features, screen_list)
+            LoadFileScreen(board, screen_features, screen_list, slider)
         elif screen_list[0] == ScreenFlag.EDITOR:
             last_screen_list[0] = ScreenFlag.EDITOR
             EditorScreen(screen_features, board, piece_selected, screen_list)
         elif screen_list[0] == ScreenFlag.CONFIG_GAME:
-            ConfigGameScreen(screen_features, board, screen_list, custom_board_size, difficulty, next_screen_list)
+            [custom_board_size[0]] = ConfigGameScreen(screen_features, board, screen_list, [custom_board_size[0]], difficulty_list, next_screen_list)
 
         
         

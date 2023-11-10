@@ -99,23 +99,23 @@ def DrawBoardGrid(board, ScreenFeatures):
 
 
 
-def PlayScreen(board, menu, ScreenFeatures, screen, mouse, clicked):
+def PlayScreen(board:Board, menu:Menu, ScreenFeatures:ScreenFeatures, screen_list, mouse, clicked):
     clear_background(DARKGREEN)
     DrawBoardGrid(board, ScreenFeatures)
 
-    draw_rectangle(menu.goBackButton.x, menu.goBackButton.y, menu.goBackButton.width, menu.goBackButton.height, WHITE)
-    draw_rectangle(menu.goFowardButton.x, menu.goFowardButton.y, menu.goFowardButton.width, menu.goFowardButton.height, WHITE)
-    draw_rectangle(menu.saveGameButton.x, menu.saveGameButton.y, menu.saveGameButton.width, menu.saveGameButton.height, WHITE)
+    draw_rectangle(int(menu.goBackButton.x), int(menu.goBackButton.y), int(menu.goBackButton.width), int(menu.goBackButton.height), WHITE)
+    draw_rectangle(int(menu.goForwardButton.x), int(menu.goForwardButton.y), int(menu.goForwardButton.width), int(menu.goForwardButton.height), WHITE)
+    draw_rectangle(int(menu.saveGameButton.x), int(menu.saveGameButton.y), int(menu.saveGameButton.width), int(menu.saveGameButton.height), WHITE)
 
-    draw_text("Go back", menu.goBackButton.x - measure_text("Go back", 30) / 2 + menu.goBackButton.width / 2,
-              menu.goBackButton.y + menu.goBackButton.height / 2 - 15, 30, BLACK if canGoBack(board) else GRAY)
-    draw_text("Go foward", menu.goFowardButton.x - measure_text("Go foward", 30) / 2 + menu.goFowardButton.width / 2,
-              menu.goFowardButton.y + menu.goFowardButton.height / 2 - 15, 30, BLACK if canGoFoward(board) else GRAY)
-    draw_text("Save game", menu.saveGameButton.x - measure_text("Save game", 30) / 2 + menu.saveGameButton.width / 2,
-              menu.saveGameButton.y + menu.saveGameButton.height / 2 - 15, 30, BLACK)
+    draw_text("Go back", int(menu.goBackButton.x - measure_text("Go back", 30) / 2 + menu.goBackButton.width / 2),
+              int(menu.goBackButton.y + menu.goBackButton.height / 2 - 15), 30, BLACK if canGoBack(board) else GRAY)
+    draw_text("Go foward", int(menu.goForwardButton.x - measure_text("Go foward", 30) / 2 + menu.goForwardButton.width / 2),
+              int(menu.goForwardButton.y + menu.goForwardButton.height / 2 - 15), 30, BLACK if canGoFoward(board) else GRAY)
+    draw_text("Save game", int(menu.saveGameButton.x - measure_text("Save game", 30) / 2 + menu.saveGameButton.width / 2),
+              int(menu.saveGameButton.y + menu.saveGameButton.height / 2 - 15), 30, BLACK)
 
     if clicked:
-        CheckButtonPressed(menu, board, screen, mouse)
+        CheckButtonPressed(menu, board, screen_list, mouse)
     UpdateDrawingState(board, ScreenFeatures)
     if nextTurn(board) == PlayerType.BLACK_PLAYER:
         SetHelpers(board, PlayerType.BLACK_PLAYER)
@@ -123,17 +123,17 @@ def PlayScreen(board, menu, ScreenFeatures, screen, mouse, clicked):
     elif nextTurn(board) == PlayerType.WHITE_PLAYER:
         computerMove(board, PlayerType.WHITE_PLAYER)
 
-    draw_text("Your score:", menu.saveGameButton.x, menu.saveGameButton.height + menu.saveGameButton.y + 30, 20, WHITE)
+    draw_text("Your score:", int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 30), 20, WHITE)
     val = getScore(board, PlayerType.BLACK_PLAYER)
-    draw_text(str(val), menu.saveGameButton.x, menu.saveGameButton.height + menu.saveGameButton.y + 50, 20, WHITE)
+    draw_text(str(val), int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 50), 20, WHITE)
 
-    draw_text("CPU score:", menu.saveGameButton.x, menu.saveGameButton.height + menu.saveGameButton.y + 100, 20, WHITE)
+    draw_text("CPU score:", int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 100), 20, WHITE)
     val = getScore(board, PlayerType.WHITE_PLAYER)
-    draw_text(str(val), menu.saveGameButton.x, menu.saveGameButton.height + menu.saveGameButton.y + 120, 20, WHITE)
+    draw_text(str(val), int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 120), 20, WHITE)
 
     if isGameOver(board):
-        draw_text("Game Over", (ScreenFeatures.squareSize * board.size) / 2 - measure_text("Game Over", 80) / 2,
-                  ScreenFeatures.screenHeight / 2 - 40, 80, GRAY)
+        draw_text("Game Over", int((ScreenFeatures.squareSize * board.size) / 2 - measure_text("Game Over", 80) / 2),
+                  int(ScreenFeatures.screenHeight / 2 - 40), 80, GRAY)
         text = ""
         color = GRAY
         if getWinner(board) == Winners.WINNER:
@@ -144,17 +144,18 @@ def PlayScreen(board, menu, ScreenFeatures, screen, mouse, clicked):
             color = RED
         elif getWinner(board) == Winners.TIE:
             text = "It's a tie!"
-        draw_text(text, (ScreenFeatures.squareSize * board.size) / 2 - measure_text(text, 60) / 2,
-                  ScreenFeatures.screenHeight / 2 - 30 + 80 + 10, 60, color)
+        draw_text(text, int((ScreenFeatures.squareSize * board.size) / 2 - measure_text(text, 60) / 2),
+                  int(ScreenFeatures.screenHeight / 2 - 30 + 80 + 10), 60, color)
 
     margin = board.size * ScreenFeatures.squareSize
     free_space = ScreenFeatures.screenWidth - margin
-    exit_rect = Rectangle(margin + 30, ScreenFeatures.screenHeight - 150, (free_space - 60), 100)
+    exit_rect = Rectangle(int(margin + 30), int(ScreenFeatures.screenHeight - 150), int((free_space - 60)), 100)
     draw_rectangle_rec(exit_rect, WHITE)
-    draw_text("Exit", exit_rect.x + exit_rect.width / 2 - measure_text("Exit", 30) / 2, exit_rect.y + exit_rect.height / 2 - 15, 30, BLACK)
+    draw_text("Exit", int(exit_rect.x + exit_rect.width / 2 - measure_text("Exit", 30) / 2), int(exit_rect.y + exit_rect.height / 2 - 15), 30, BLACK)
     if clicked and check_collision_point_rec(mouse, exit_rect):
         destructBoard(board)
-        screen = ScreenFlag.MENU
+        screen_list[0] = ScreenFlag.MENU
+
 def ShowFileSaverScreen(board, ScreenFeatures, filename, frame_counter, mouse, screen, num_of_chars, last_screen):
     clear_background(RAYWHITE)
 
@@ -193,7 +194,8 @@ def ShowFileSaverScreen(board, ScreenFeatures, filename, frame_counter, mouse, s
         filename = ""
         num_of_chars = 0
         screen = last_screen
-def LoadFileScreen(board, ScreenFeatures, screen, slider):
+
+def LoadFileScreen(board: Board, ScreenFeatures: ScreenFeatures, screen_list, slider):
     directory = getDirectories()
     clear_background(RAYWHITE)
     bar = (50 * directory.NumberOfDirectories + 10) > (ScreenFeatures.screenHeight - 80)
@@ -204,21 +206,21 @@ def LoadFileScreen(board, ScreenFeatures, screen, slider):
 
     scroll_rect = Rectangle(ScreenFeatures.screenWidth - 20,
                             5 +
-                            min(max(0, slider.offset + slider.difference),
+                            min(max(0, int(slider.offset + slider.difference)),
                                 ScreenFeatures.screenHeight - 70 - bar_size),
                             15,
-                            bar_size)
+                            int(bar_size))
     if bar:
-        draw_rectangle(ScreenFeatures.screenWidth - 20, 5, 15, cancel_rect.y - 10, fade(LIGHTGRAY, 0.6))
+        draw_rectangle(int(ScreenFeatures.screenWidth - 20), 5, 15, int(cancel_rect.y - 10), fade(LIGHTGRAY, 0.6))
 
         if slider.collision:
-            slider.offset = get_mouse_position().y
+            slider.offset = int(get_mouse_position().y)
             if not is_mouse_button_down(0):
                 slider.collision = False
 
         if check_collision_point_rec(get_mouse_position(), scroll_rect) and is_mouse_button_pressed(0):
-            slider.offset = get_mouse_position().y
-            slider.difference = scroll_rect.y - slider.offset
+            slider.offset = int(get_mouse_position().y)
+            slider.difference = int(scroll_rect.y - slider.offset)
             slider.collision = True
 
         draw_rectangle_rec(scroll_rect, GRAY if slider.collision else fade(GRAY, 0.65))
@@ -227,26 +229,26 @@ def LoadFileScreen(board, ScreenFeatures, screen, slider):
 
     for i in range(directory.NumberOfDirectories):
         rec = Rectangle(10, i * 50 + 10 - (((50 * directory.NumberOfDirectories + 10) - ScreenFeatures.screenHeight + 60) * percent),
-                        measure_text(directory.directories[i], 20) + 20, 30)
+                        int(measure_text(directory.directories[i], 20) + 20), 30)
         over = check_collision_point_rec(get_mouse_position(), rec)
         if is_mouse_button_pressed(0) and over:
             board_temp = loadGame(load_file_text(f"saved/{directory.directories[i]}"))
             if board_temp.initialized != 1:
-                screen = ScreenFlag.GAME
+                screen_list[0] = ScreenFlag.GAME
                 DestroyDirectory(directory)
                 return
             board = board_temp
-            ScreenFeatures.squareSize = ScreenFeatures.screenHeight / board.size
-            screen = ScreenFlag.GAME
+            ScreenFeatures.squareSize = int(ScreenFeatures.screenHeight / board.size)
+            screen_list[0] = ScreenFlag.GAME
         draw_rectangle_rec(rec, LIGHTGRAY if over else RAYWHITE)
-        draw_text(directory.directories[i], 20, rec.y + 5, 20, BLACK)
+        draw_text(directory.directories[i], 20, int(rec.y + 5), 20, BLACK)
 
-    draw_rectangle(0, ScreenFeatures.screenHeight - 70, ScreenFeatures.screenWidth, 70, RAYWHITE)
+    draw_rectangle(0, int(ScreenFeatures.screenHeight - 70), ScreenFeatures.screenWidth, 70, RAYWHITE)
     over = check_collision_point_rec(get_mouse_position(), cancel_rect)
     draw_rectangle_rec(cancel_rect, LIGHTGRAY if over else GRAY)
     if over and is_mouse_button_pressed(0):
-        screen = ScreenFlag.MENU
-    draw_text("CANCEL", ScreenFeatures.screenWidth / 2 - measure_text("CANCEL", 30) / 2 + cancel_rect.x / 2, cancel_rect.y + 10, 30, WHITE)
+        screen_list[0] = ScreenFlag.MENU
+    draw_text("CANCEL", int(ScreenFeatures.screenWidth / 2 - measure_text("CANCEL", 30) / 2 + int(cancel_rect.x / 2)), int(cancel_rect.y + 10), 30, WHITE)
 
 def UpdateDrawingState(board, ScreenFeatures: ScreenFeatures):
 
@@ -348,11 +350,11 @@ def MenuScreen(ScreenFeatures, frame_count, MenuOptions: MenuOptions, screen_fla
     # unload_texture(texture)
     # unload_image(image)
 
-def EditorScreen(ScreenFeatures, board, piece, screen):
+def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, screen_list):
     clear_background(DARKGREEN)
-    DrawBoardGrid(board, ScreenFeatures)
-    margin = board.size * ScreenFeatures.squareSize
-    free_space = ScreenFeatures.screenWidth - margin
+    DrawBoardGrid(board, screenFeatures)
+    margin = board.size * screenFeatures.squareSize
+    free_space = screenFeatures.screenWidth - margin
     radius = free_space / 4
     black = Vector2(2 * radius + margin, 50 + radius)
     white = Vector2(black.x, 50 + black.y + 2 * radius)
@@ -364,22 +366,22 @@ def EditorScreen(ScreenFeatures, board, piece, screen):
     mouse = get_mouse_position()
     clicked = is_mouse_button_pressed(0)
 
-    UpdateDrawingState(board, ScreenFeatures)
-    if 0 <= mouse.x < margin and 0 <= mouse.x < ScreenFeatures.screenHeight:
+    UpdateDrawingState(board, screenFeatures)
+    if 0 <= mouse.x < margin and 0 <= mouse.x < screenFeatures.screenHeight:
         clicked = is_mouse_button_down(0)
-        x = math.floor(mouse.x / ScreenFeatures.squareSize)
-        y = math.floor(mouse.y / ScreenFeatures.squareSize)
-        helper = Vector2(x * ScreenFeatures.squareSize + radius, y * ScreenFeatures.squareSize + radius)
+        x = math.floor(mouse.x / screenFeatures.squareSize)
+        y = math.floor(mouse.y / screenFeatures.squareSize)
+        helper = Vector2(x * screenFeatures.squareSize + radius, y * screenFeatures.squareSize + radius)
 
-        helper_rect = Rectangle(helper.x + 1 - radius, helper.y + 1 - radius, ScreenFeatures.squareSize - 2, ScreenFeatures.squareSize - 2)
+        helper_rect = Rectangle(helper.x + 1 - radius, helper.y + 1 - radius, screenFeatures.squareSize - 2, screenFeatures.squareSize - 2)
         draw_rectangle_rec(helper_rect, DARKGREEN)
 
-        circle = Vector2(x * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2, y * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2)
+        circle = Vector2(x * screenFeatures.squareSize + screenFeatures.squareSize / 2, y * screenFeatures.squareSize + screenFeatures.squareSize / 2)
 
         if piece.pieceType == PlayerType.BLACK_PLAYER:
-            draw_circle_v(circle, ScreenFeatures.squareSize / 2 - 5, fade(BLACK, 0.5))
+            draw_circle_v(circle, screenFeatures.squareSize / 2 - 5, fade(BLACK, 0.5))
         elif piece.pieceType == PlayerType.WHITE_PLAYER:
-            draw_circle_v(circle, ScreenFeatures.squareSize / 2 - 5, fade(WHITE, 0.5))
+            draw_circle_v(circle, screenFeatures.squareSize / 2 - 5, fade(WHITE, 0.5))
 
         if check_collision_point_rec(mouse, helper_rect) and clicked:
             board.state[x][y].pieceType = PlayerType.BLACK_PLAYER if is_black else PlayerType.WHITE_PLAYER
@@ -389,13 +391,13 @@ def EditorScreen(ScreenFeatures, board, piece, screen):
             board.state[x][y].pieceType = StateFlags.VOID
             board.initialState[x][y].pieceType = StateFlags.VOID
 
-    exit_rect = Rectangle(margin + 30, ScreenFeatures.screenHeight - 150, (free_space - 60), 100)
+    exit_rect = Rectangle(int(margin + 30), int(screenFeatures.screenHeight - 150), int((free_space - 60)), 100)
     draw_rectangle_rec(exit_rect, LIGHTGRAY)
-    draw_text("Exit", exit_rect.x + exit_rect.width / 2 - measure_text("Exit", 30) / 2, exit_rect.y + exit_rect.height / 2 - 15, 30, WHITE)
+    draw_text("Exit", int(exit_rect.x + exit_rect.width / 2 - measure_text("Exit", 30) / 2), int(exit_rect.y + exit_rect.height / 2 - 15), 30, WHITE)
 
-    save_rect = Rectangle(margin + 30, exit_rect.y - exit_rect.height - 50, (free_space - 60), 100)
+    save_rect = Rectangle(int(margin + 30), int(exit_rect.y - exit_rect.height - 50), int((free_space - 60)), 100)
     draw_rectangle_rec(save_rect, LIGHTGRAY)
-    draw_text("Save", save_rect.x + save_rect.width / 2 - measure_text("Save", 30) / 2, save_rect.y + save_rect.height / 2 - 15, 30, WHITE)
+    draw_text("Save", int(save_rect.x + save_rect.width / 2 - measure_text("Save", 30) / 2), int(save_rect.y + save_rect.height / 2 - 15), 30, WHITE)
 
     if clicked and check_collision_point_circle(mouse, black, radius):
         piece.pieceType = PlayerType.BLACK_PLAYER
@@ -403,11 +405,11 @@ def EditorScreen(ScreenFeatures, board, piece, screen):
         piece.pieceType = PlayerType.WHITE_PLAYER
 
     if clicked and check_collision_point_rec(mouse, save_rect):
-        screen = ScreenFlag.SAVE
+        screen_list[0] = ScreenFlag.SAVE
 
     if clicked and check_collision_point_rec(mouse, exit_rect):
         destructBoard(board)
-        screen = ScreenFlag.MENU
+        screen_list[0] = ScreenFlag.MENU
 
 def CheckMenuButtonPressed(menuOptions: MenuOptions, screen_list, board, next_screen_list):
     clicked = is_mouse_button_pressed(0)
@@ -416,25 +418,19 @@ def CheckMenuButtonPressed(menuOptions: MenuOptions, screen_list, board, next_sc
     if clicked and check_collision_point_rec(mouse, menuOptions.startGameButton):
         screen_list[0] = ScreenFlag.CONFIG_GAME
         next_screen_list[0] = ScreenFlag.GAME
-        print("Start game")
 
     if clicked and check_collision_point_rec(mouse, menuOptions.loadGameButton):
         screen_list[0] = ScreenFlag.LOAD
-        print("Load game")
 
     if clicked and check_collision_point_rec(mouse, menuOptions.editorButton):
         screen_list[0] = ScreenFlag.CONFIG_GAME
         next_screen_list[0] = ScreenFlag.EDITOR
-        print("Editor")
         board.Custom = True
 
     return screen_list[0], next_screen_list[0]
 
-def ConfigGameScreen(ScreenFeatures, board, screen, customBoardSize, difficulty, nextScreen):
+def ConfigGameScreen(ScreenFeatures: ScreenFeatures, board, screen_list, customBoardSize_list, difficulty_list, next_screen_list):
     clear_background(RAYWHITE)
-    size = 6 + 2 * customBoardSize
-    text = str(size)
-    draw_text(text, int(ScreenFeatures.screenWidth / 3 - measure_text(text, 100) / 2), int(ScreenFeatures.screenHeight / 2 - 180), 100, BLACK)
 
     draw_text("Chose your board size", int(ScreenFeatures.screenWidth / 3 - measure_text("Chose your board size", 30) / 2), int(ScreenFeatures.screenHeight / 2 - 300), 30, GRAY)
     margin = int((2 * (ScreenFeatures.screenWidth / 3) - 2 * 130) / 3)
@@ -466,9 +462,9 @@ def ConfigGameScreen(ScreenFeatures, board, screen, customBoardSize, difficulty,
     intermediate_button = Rectangle(easy_button.x, int(easy_button.y + easy_button.height + 50), easy_button.width, easy_button.height)
     hard_button = Rectangle(int(intermediate_button.x), int(intermediate_button.y + intermediate_button.height + 50), intermediate_button.width, intermediate_button.height)
 
-    draw_rectangle_rec(easy_button, GRAY if difficulty == Difficulty.EASY else LIGHTGRAY)
-    draw_rectangle_rec(intermediate_button, GRAY if difficulty == Difficulty.INTERMEDIATE else LIGHTGRAY)
-    draw_rectangle_rec(hard_button, GRAY if difficulty == Difficulty.HARD else LIGHTGRAY)
+    draw_rectangle_rec(easy_button, GRAY if difficulty_list[0] == Difficulty.EASY else LIGHTGRAY)
+    draw_rectangle_rec(intermediate_button, GRAY if difficulty_list[0] == Difficulty.INTERMEDIATE else LIGHTGRAY)
+    draw_rectangle_rec(hard_button, GRAY if difficulty_list[0] == Difficulty.HARD else LIGHTGRAY)
 
     draw_text("EASY", int(easy_button.x + easy_button.width / 2 - measure_text("EASY", 20) / 2), int(easy_button.y + easy_button.height / 2 - 10), 20, WHITE)
     draw_text("INTERMEDIATE", int(intermediate_button.x + intermediate_button.width / 2 - measure_text("INTERMEDIATE", 20) / 2), int(intermediate_button.y + intermediate_button.height / 2 - 10), 20, WHITE)
@@ -479,24 +475,28 @@ def ConfigGameScreen(ScreenFeatures, board, screen, customBoardSize, difficulty,
     over_hard = check_collision_point_rec(mouse, hard_button)
 
     if clicked and over_easy:
-        difficulty = Difficulty.EASY
+        difficulty_list[0] = Difficulty.EASY
     if clicked and over_intermediate:
-        difficulty = Difficulty.INTERMEDIATE
+        difficulty_list[0] = Difficulty.INTERMEDIATE
     if clicked and over_hard:
-        difficulty = Difficulty.HARD
+        difficulty_list[0] = Difficulty.HARD
 
     if over_sum and clicked:
-        customBoardSize += 1
-    if over_subs and clicked and customBoardSize > 0:
-        customBoardSize -= 1
+        customBoardSize_list[0] += 1 
+    if over_subs and clicked and customBoardSize_list[0] > 0:
+        customBoardSize_list[0] -= 1 
+
+    size =  6 + 2 * customBoardSize_list[0]
+    text = str(6 + 2 * customBoardSize_list[0])
+    draw_text(text, int(ScreenFeatures.screenWidth / 3 - measure_text(text, 100) / 2), int(ScreenFeatures.screenHeight / 2 - 180), 100, BLACK)
 
     if check_collision_point_rec(mouse, accept_button) and clicked:
-        initializeGame(board, size, difficulty, True, Player(True), Player(False))
-        screen = nextScreen
-        difficulty = Difficulty.EASY
-        customBoardSize = 0
+        initializeGame(board, size, difficulty_list[0], True, Player(True), Player(False))
+        screen_list[0] = next_screen_list[0]
+        difficulty_list[0] = Difficulty.EASY
         ScreenFeatures.squareSize = int(ScreenFeatures.screenHeight / size)
     if check_collision_point_rec(mouse, cancel_button) and clicked:
-        screen = ScreenFlag.MENU
-        difficulty = Difficulty.EASY
-        customBoardSize = 0
+        screen_list[0] = ScreenFlag.MENU
+        difficulty_list[0] = Difficulty.EASY
+
+    return customBoardSize_list

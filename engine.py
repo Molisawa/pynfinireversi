@@ -27,15 +27,14 @@ class Difficulty(Enum):
     HARD = 2
 
 class Piece:
-    def __init__(self, pieceType):
+    def __init__(self, pieceType=None):
         self.pieceType = pieceType
 
 class Movement:
-    def __init__(self, pieceType, x, y):
+    def __init__(self, pieceType=None, x=None, y=None):
         self.pieceType = pieceType
         self.x = x
         self.y = y
-
 class Player:
     def __init__(self, isHuman):
         self.isHuman = isHuman
@@ -56,117 +55,15 @@ class Board:
         self.player1 = None
         self.player2 = None
 
-def setDefaultInitialBoardState(board):
-    pass
 
-def setCustomBoardState(board):
-    pass
-
-def initializeGame(board, size, difficulty, custom, player1, player2):
-    pass
-
-def initializeBoard(board):
-    pass
-
-def getNumberOfMoves(board, pieceType):
-    pass
-
-def getPointEvaluator(board, pieceType):
-    pass
-
-def getScorePosition(board, pieceType):
-    pass
-
-def getAllPossibleMoves(board, pieceType):
-    pass
-
-def goBack(board):
-    pass
-
-def goForward(board):
-    pass
-
-def canGoBack(board):
-    pass
-
-def canGoFoward(board):
-    pass
-
-def nextTurn(board):
-    pass
-
-def endGame():
-    pass
-
-def saveGame(board):
-    pass
-
-def loadGame(filename):
-    pass
-
-def isValidMove(board, lastMove):
-    pass
-
-def isGameOver(board):
-    pass
-
-def getWinner(board):
-    pass
-
-def SetHelpers(board, player):
-    pass
-
-def cleanHelpers(board):
-    pass
-
-def makeMove(board, lastMove):
-    pass
-
-def makeRealMove(board, lastMove):
-    pass
-
-def removeHistoryFoward(board):
-    pass
-
-def randomMovement(board, player):
-    pass
-
-def copyBoard(board):
-    pass
-
-def destructBoard(board):
-    pass
-
-def MinimaxSolver(depth, alpha, beta, board, move, player):
-    pass
-
-def bestMinimaxMove(board, player):
-    pass
-
-def computerMove(board, player):
-    pass
-
-def canMove(board, pieceType):
-    pass
-
-def bestMove(board, player):
-    pass
-
-def canSkipBlackPiece(board):
-    pass
-
-def getScore(board, pieceType):
-    pass
-
-
-def initializeGame(board, size, difficulty, custom, player1, player2):
+def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     board.initialized = 1
     board.difficulty = difficulty
     board.noOfMovesBack = 0
     board.historyBack = [Movement()]
     board.noOfMovesFoward = 0
     board.historyForward = [Movement()]
-    board.size = 8
+    board.size = size
     board.custom = custom
     board.player1 = player1
     board.player2 = player2
@@ -175,7 +72,7 @@ def initializeGame(board, size, difficulty, custom, player1, player2):
 def getPointEvaluator(board, pieceType):
     return getScorePosition(board, pieceType)
 
-def getScorePosition(board, pieceType):
+def getScorePosition(board:Board, pieceType):
     valores = [[0 for _ in range(board.size)] for _ in range(board.size)]
 
     for i in range(board.size):
@@ -227,7 +124,7 @@ def computerMove(board, player):
     elif difficulty == Difficulty.HARD:
         makeRealMove(board, bestMinimaxMove(board, player))
 
-def initializeBoard(board):
+def initializeBoard(board:Board):
     board.lastPiecetypeMoved = "WHITE_PLAYER"
 
     board.state = [[Piece() for _ in range(board.size)] for _ in range(board.size)]
