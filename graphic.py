@@ -409,33 +409,36 @@ def EditorScreen(ScreenFeatures, board, piece, screen):
         destructBoard(board)
         screen = ScreenFlag.MENU
 
-def CheckMenuButtonPressed(menuOptions:MenuOptions, screen, board, nextScreen):
+def CheckMenuButtonPressed(menuOptions: MenuOptions, screen_list, board, next_screen_list):
     clicked = is_mouse_button_pressed(0)
     mouse = get_mouse_position()
+
     if clicked and check_collision_point_rec(mouse, menuOptions.startGameButton):
-        screen = ScreenFlag.CONFIG_GAME
-        nextScreen = ScreenFlag.GAME
+        screen_list[0] = ScreenFlag.CONFIG_GAME
+        next_screen_list[0] = ScreenFlag.GAME
         print("Start game")
+
     if clicked and check_collision_point_rec(mouse, menuOptions.loadGameButton):
-        screen = ScreenFlag.LOAD
+        screen_list[0] = ScreenFlag.LOAD
         print("Load game")
+
     if clicked and check_collision_point_rec(mouse, menuOptions.editorButton):
-        screen = ScreenFlag.CONFIG_GAME
-        nextScreen = ScreenFlag.EDITOR
+        screen_list[0] = ScreenFlag.CONFIG_GAME
+        next_screen_list[0] = ScreenFlag.EDITOR
         print("Editor")
         board.Custom = True
 
-    return screen, nextScreen
+    return screen_list[0], next_screen_list[0]
 
 def ConfigGameScreen(ScreenFeatures, board, screen, customBoardSize, difficulty, nextScreen):
     clear_background(RAYWHITE)
     size = 6 + 2 * customBoardSize
     text = str(size)
-    draw_text(text, ScreenFeatures.screenWidth / 3 - measure_text(text, 100) / 2, ScreenFeatures.screenHeight / 2 - 180, 100, BLACK)
+    draw_text(text, int(ScreenFeatures.screenWidth / 3 - measure_text(text, 100) / 2), int(ScreenFeatures.screenHeight / 2 - 180), 100, BLACK)
 
-    draw_text("Chose your board size", ScreenFeatures.screenWidth / 3 - measure_text("Chose your board size", 30) / 2, ScreenFeatures.screenHeight / 2 - 300, 30, GRAY)
-    margin = (2 * (ScreenFeatures.screenWidth / 3) - 2 * 130) / 3
-    sum_rect = Rectangle(margin, ScreenFeatures.screenHeight / 2 - 30, 130, 130)
+    draw_text("Chose your board size", int(ScreenFeatures.screenWidth / 3 - measure_text("Chose your board size", 30) / 2), int(ScreenFeatures.screenHeight / 2 - 300), 30, GRAY)
+    margin = int((2 * (ScreenFeatures.screenWidth / 3) - 2 * 130) / 3)
+    sum_rect = Rectangle(margin, int(ScreenFeatures.screenHeight / 2 - 30), 130, 130)
     subs_rect = Rectangle(margin + sum_rect.x + sum_rect.width, sum_rect.y, sum_rect.width, sum_rect.height)
 
     mouse = get_mouse_position()
@@ -444,32 +447,32 @@ def ConfigGameScreen(ScreenFeatures, board, screen, customBoardSize, difficulty,
     over_subs = check_collision_point_rec(mouse, subs_rect)
 
     draw_rectangle_rec(sum_rect, LIGHTGRAY if over_sum else RAYWHITE)
-    draw_text("+", sum_rect.x + sum_rect.width / 2 - measure_text("+", 70) / 2, sum_rect.y + sum_rect.height / 2 - 35, 70, BLACK)
+    draw_text("+", int(sum_rect.x + sum_rect.width / 2 - measure_text("+", 70) / 2), int(sum_rect.y + sum_rect.height / 2 - 35), 70, BLACK)
     draw_rectangle_rec(subs_rect, LIGHTGRAY if over_subs else RAYWHITE)
-    draw_text("-", subs_rect.x + subs_rect.width / 2 - measure_text("-", 70) / 2, subs_rect.y + subs_rect.height / 2 - 35, 70, BLACK)
+    draw_text("-", int(subs_rect.x + subs_rect.width / 2 - measure_text("-", 70) / 2), int(subs_rect.y + subs_rect.height / 2 - 35), 70, BLACK)
 
-    accept_button = Rectangle(ScreenFeatures.screenWidth / 2 - 100, ScreenFeatures.screenHeight / 2 + 120, 200, 80)
-    cancel_button = Rectangle(ScreenFeatures.screenWidth / 2 - 100, accept_button.y + accept_button.height + 50, accept_button.width, accept_button.height)
+    accept_button = Rectangle(int(ScreenFeatures.screenWidth / 2 - 100), int(ScreenFeatures.screenHeight / 2 + 120), 200, 80)
+    cancel_button = Rectangle(int(ScreenFeatures.screenWidth / 2 - 100), int(accept_button.y + accept_button.height + 50), accept_button.width, accept_button.height)
 
     draw_rectangle_rec(accept_button, LIGHTGRAY)
     draw_rectangle_rec(cancel_button, LIGHTGRAY)
 
-    draw_text("Accept", accept_button.x + accept_button.width / 2 - measure_text("Accept", 40) / 2, accept_button.y + accept_button.height / 2 - 20, 40, WHITE)
-    draw_text("Cancel", cancel_button.x + cancel_button.width / 2 - measure_text("Cancel", 40) / 2, cancel_button.y + cancel_button.height / 2 - 20, 40, WHITE)
+    draw_text("Accept", int(accept_button.x + accept_button.width / 2 - measure_text("Accept", 40) / 2), int(accept_button.y + accept_button.height / 2 - 20), 40, WHITE)
+    draw_text("Cancel", int(cancel_button.x + cancel_button.width / 2 - measure_text("Cancel", 40) / 2), int(cancel_button.y + cancel_button.height / 2 - 20), 40, WHITE)
 
-    margin_difficulty = (ScreenFeatures.screenHeight - 340) / 2
+    margin_difficulty = int((ScreenFeatures.screenHeight - 340) / 2)
 
-    easy_button = Rectangle(ScreenFeatures.screenWidth * 3 / 4 - (ScreenFeatures.screenWidth / 3 - 80) / 2, margin_difficulty, ScreenFeatures.screenWidth / 3 - 80, 80)
-    intermediate_button = Rectangle(easy_button.x, easy_button.y + easy_button.height + 50, easy_button.width, easy_button.height)
-    hard_button = Rectangle(intermediate_button.x, intermediate_button.y + intermediate_button.height + 50, intermediate_button.width, intermediate_button.height)
+    easy_button = Rectangle(int(ScreenFeatures.screenWidth * 3 / 4 - (ScreenFeatures.screenWidth / 3 - 80) / 2), margin_difficulty, int(ScreenFeatures.screenWidth / 3 - 80), 80)
+    intermediate_button = Rectangle(easy_button.x, int(easy_button.y + easy_button.height + 50), easy_button.width, easy_button.height)
+    hard_button = Rectangle(int(intermediate_button.x), int(intermediate_button.y + intermediate_button.height + 50), intermediate_button.width, intermediate_button.height)
 
     draw_rectangle_rec(easy_button, GRAY if difficulty == Difficulty.EASY else LIGHTGRAY)
     draw_rectangle_rec(intermediate_button, GRAY if difficulty == Difficulty.INTERMEDIATE else LIGHTGRAY)
     draw_rectangle_rec(hard_button, GRAY if difficulty == Difficulty.HARD else LIGHTGRAY)
 
-    draw_text("EASY", easy_button.x + easy_button.width / 2 - measure_text("EASY", 20) / 2, easy_button.y + easy_button.height / 2 - 10, 20, WHITE)
-    draw_text("INTERMEDIATE", intermediate_button.x + intermediate_button.width / 2 - measure_text("INTERMEDIATE", 20) / 2, intermediate_button.y + intermediate_button.height / 2 - 10, 20, WHITE)
-    draw_text("HARD", hard_button.x + hard_button.width / 2 - measure_text("HARD", 20) / 2, hard_button.y + hard_button.height / 2 - 10, 20, WHITE)
+    draw_text("EASY", int(easy_button.x + easy_button.width / 2 - measure_text("EASY", 20) / 2), int(easy_button.y + easy_button.height / 2 - 10), 20, WHITE)
+    draw_text("INTERMEDIATE", int(intermediate_button.x + intermediate_button.width / 2 - measure_text("INTERMEDIATE", 20) / 2), int(intermediate_button.y + intermediate_button.height / 2 - 10), 20, WHITE)
+    draw_text("HARD", int(hard_button.x + hard_button.width / 2 - measure_text("HARD", 20) / 2), int(hard_button.y + hard_button.height / 2 - 10), 20, WHITE)
 
     over_easy = check_collision_point_rec(mouse, easy_button)
     over_intermediate = check_collision_point_rec(mouse, intermediate_button)
@@ -492,7 +495,7 @@ def ConfigGameScreen(ScreenFeatures, board, screen, customBoardSize, difficulty,
         screen = nextScreen
         difficulty = Difficulty.EASY
         customBoardSize = 0
-        ScreenFeatures.squareSize = ScreenFeatures.screenHeight / size
+        ScreenFeatures.squareSize = int(ScreenFeatures.screenHeight / size)
     if check_collision_point_rec(mouse, cancel_button) and clicked:
         screen = ScreenFlag.MENU
         difficulty = Difficulty.EASY
