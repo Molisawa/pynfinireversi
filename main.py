@@ -42,11 +42,8 @@ def main():
         clicked = 0
         if is_mouse_button_pressed(0):
             clicked = 1
-            print("Mouse clicked at: ", mouse)
-            print("Mouse clicked at: ", clicked)
 
         key = get_key_pressed()
-        print(key, "se presionó")
 
         while key > 0:
             if 32 <= key <= 125 and num_of_chars < 10:
@@ -77,7 +74,8 @@ def main():
             EditorScreen(screen_features, board, piece_selected, screen_flag)
         elif screen_flag == ScreenFlag.CONFIG_GAME:
             ConfigGameScreen(screen_features, board, screen_flag, custom_board_size, difficulty, next_screen)
-
+        
+        
         end_drawing()
 
     # ... (código adicional aquí)

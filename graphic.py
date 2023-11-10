@@ -43,60 +43,10 @@ class ScreenFeatures:
     screenHeight: int
     squareSize: float
 
-def initSlider(slider: Slider):
-    pass
-
-def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, screenFlag: ScreenFlag):
-    pass
-
-def initScreenFeatures(features: ScreenFeatures, screenWidth: int, screenHeight: int, squareSize: float):
-    pass
-
-def UpdateDrawingState(board: Board, screenFeatures: ScreenFeatures):
-    pass
-
-def MenuScreen(screenFeatures: ScreenFeatures, frameCount: int, menuOptions: MenuOptions, screenFlag: ScreenFlag, board: Board, screenFlag2: ScreenFlag):
-    pass
-
-def DrawBoardGrid(board: Board, screenFeatures: ScreenFeatures):
-    pass
-
-def LoadFileScreen(board: Board, screenFeatures: ScreenFeatures, screenFlag: ScreenFlag, slider: Slider):
-    pass
-
-def getMenu(board: Board, screenFeatures: ScreenFeatures) -> Menu:
-    pass
-
-def getMenuOptions(screenFeatures: ScreenFeatures) -> MenuOptions:
-    pass
-
-def DestroyDirectory(directory: DirectoryEntry):
-    pass
-
-def CheckPiecePlayed(board: Board, screenFeatures: ScreenFeatures, clicked: int, mouse: Vector2):
-    pass
-
-def CheckButtonPressed(menu: Menu, board: Board, screenFlag: ScreenFlag, mouse: Vector2):
-    pass
-
-def PlayScreen(board: Board, menu: Menu, screenFeatures: ScreenFeatures, screenFlag: ScreenFlag, mouse: Vector2, clicked: int):
-    pass
-
-def ShowFileSaverScreen(board: Board, screenFeatures: ScreenFeatures, filename: str, frameCounter: int, mouse: Vector2, screenFlag: ScreenFlag, numOfChars: int, screenFlag2: ScreenFlag):
-    pass
-
-def CheckMenuButtonPressed(menuOptions: MenuOptions, screenFlag: ScreenFlag, board: Board, screenFlag2: ScreenFlag):
-    pass
-
-def ConfigGameScreen(screenFeatures: ScreenFeatures, board: Board, screenFlag: ScreenFlag, customBoardSize: int, difficulty: Difficulty, screenFlag2: ScreenFlag):
-    pass
-
-
-
-def CheckButtonPressed(menu, board, screen, mouse):
+def CheckButtonPressed(menu: Menu, board, screen, mouse):
     if check_collision_point_rec(mouse, menu.goBackButton):
         goBack(board)
-    elif check_collision_point_rec(mouse, menu.goFowardButton):
+    elif check_collision_point_rec(mouse, menu.goForwardButton):
         goForward(board)
     elif check_collision_point_rec(mouse, menu.saveGameButton):
         screen[0] = "SAVE"
@@ -361,12 +311,12 @@ def MenuScreen(ScreenFeatures, frame_count, MenuOptions: MenuOptions, screen_fla
               int(ScreenFeatures.screenWidth // 2 - measure_text("INFINIREVERSI", 30) // 2),
               int(ScreenFeatures.screenHeight // 2 - 375), 30, WHITE)
 
-    frame = math.floor(frame_count * 0.383)
-    put_zero = frame < 10
-    image_path = "resources/frames/frame_{}{}_delay-0.03s.gif".format("0" if put_zero else "", frame)
-    image = load_image(image_path.encode('utf-8'))
-    texture = load_texture_from_image(image)
-    draw_texture(texture, int(ScreenFeatures.screenWidth / 2 - image.width / 2), int(ScreenFeatures.screenHeight * 0.1), WHITE)
+    # frame = math.floor(frame_count * 0.383)
+    # put_zero = frame < 10
+    # image_path = "resources/frames/frame_{}{}_delay-0.03s.gif".format("0" if put_zero else "", frame)
+    # image = load_image(image_path.encode('utf-8'))
+    # texture = load_texture_from_image(image)
+    # draw_texture(texture, int(ScreenFeatures.screenWidth / 2 - image.width / 2), int(ScreenFeatures.screenHeight * 0.1), WHITE)
     draw_rectangle_rec(MenuOptions.startGameButton, LIGHTGRAY)
     draw_rectangle_rec(MenuOptions.loadGameButton, LIGHTGRAY)
     draw_rectangle_rec(MenuOptions.editorButton, LIGHTGRAY)
@@ -459,17 +409,20 @@ def EditorScreen(ScreenFeatures, board, piece, screen):
         destructBoard(board)
         screen = ScreenFlag.MENU
 
-def CheckMenuButtonPressed(MenuOptions:MenuOptions, screen, board, nextScreen):
+def CheckMenuButtonPressed(menuOptions:MenuOptions, screen, board, nextScreen):
     clicked = is_mouse_button_pressed(0)
     mouse = get_mouse_position()
-    if clicked and check_collision_point_rec(mouse, MenuOptions.startGameButton):
+    if clicked and check_collision_point_rec(mouse, menuOptions.startGameButton):
         screen = ScreenFlag.CONFIG_GAME
         nextScreen = ScreenFlag.GAME
-    if clicked and check_collision_point_rec(mouse, MenuOptions.loadGameButton):
+        print("Start game")
+    if clicked and check_collision_point_rec(mouse, menuOptions.loadGameButton):
         screen = ScreenFlag.LOAD
-    if clicked and check_collision_point_rec(mouse, MenuOptions.editorButton):
+        print("Load game")
+    if clicked and check_collision_point_rec(mouse, menuOptions.editorButton):
         screen = ScreenFlag.CONFIG_GAME
         nextScreen = ScreenFlag.EDITOR
+        print("Editor")
         board.Custom = True
 
     return screen, nextScreen
