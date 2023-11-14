@@ -30,8 +30,7 @@ def main():
     # custom_board_size = 0
     custom_board_size = [0]  # Ahora es una lista
 
-
-    piece_selected = Piece(StateFlags.BLACK_PIECE)
+    piece_selected = Piece(StateFlags.BLACK_PIECE.value)
     
     slider = Slider(False, 0.0, 0.0)
     initSlider(slider)

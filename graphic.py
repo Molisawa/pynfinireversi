@@ -46,10 +46,13 @@ class ScreenFeatures:
 def CheckButtonPressed(menu: Menu, board, screen, mouse):
     if check_collision_point_rec(mouse, menu.goBackButton):
         goBack(board)
+        print("go back")
     elif check_collision_point_rec(mouse, menu.goForwardButton):
         goForward(board)
+        print("go forward")
     elif check_collision_point_rec(mouse, menu.saveGameButton):
         screen[0] = "SAVE"
+        print("save game")
 
 def getDirectories():
     path = "saved/"
@@ -68,40 +71,43 @@ def DestroyDirectory(directory: DirectoryEntry):
         del dir
     del directory.directories
 
-def CheckPiecePlayed(board, ScreenFeatures, clicked, mouse):
+def CheckPiecePlayed(board: Board, screenFeatures: ScreenFeatures, clicked, mouse):
     for i in range(board.size):
         for j in range(board.size):
             vector = None
-            if board.state[i][j].pieceType == StateFlags.HELPER:
-                vector = (i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2,
-                          j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2)
-                if check_collision_point_circle(mouse, vector, ScreenFeatures.squareSize / 2 - 5):
+            if board.state[i][j].pieceType == StateFlags.HELPER.value:
+                vector = (i * screenFeatures.squareSize + screenFeatures.squareSize / 2,
+                          j * screenFeatures.squareSize + screenFeatures.squareSize / 2)
+                if check_collision_point_circle(mouse, vector, screenFeatures.squareSize / 2 - 5):
                     if not clicked:
-                        draw_rectangle(i * ScreenFeatures.squareSize + 1, j * ScreenFeatures.squareSize + 1,
-                                       ScreenFeatures.squareSize - 2, ScreenFeatures.squareSize - 2, DARKGREEN)
-                        draw_circle(i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2,
-                                    j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2,
-                                    ScreenFeatures.squareSize / 2 - 5, fade(BLACK, 0.4))
+                        draw_rectangle(int(i * screenFeatures.squareSize + 1), int(j * screenFeatures.squareSize + 1),
+                                       int(screenFeatures.squareSize - 2), int(screenFeatures.squareSize - 2), DARKGREEN)
+                        draw_circle(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                                    int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                                    int(screenFeatures.squareSize / 2 - 5), fade(BLACK, 0.4))
                     else:
-                        m = Movement(pieceType=PlayerType.BLACK_PLAYER, x=i, y=j)
+                        m = Movement(pieceType=PlayerType.BLACK_PLAYER.value, x=i, y=j)
                         makeRealMove(board, m)
                         removeHistoryFoward(board)
-                        UpdateDrawingState(board, ScreenFeatures)
-def DrawBoardGrid(board, ScreenFeatures):
+                        UpdateDrawingState(board, screenFeatures)
+
+
+def DrawBoardGrid(board:Board, screenFeatures:ScreenFeatures):
     for i in range(board.size + 1):
-        draw_line_v((ScreenFeatures.squareSize * i, 0), (ScreenFeatures.squareSize * i, board.size * ScreenFeatures.squareSize), BLACK)
+        draw_line_v((screenFeatures.squareSize * i, 0), (screenFeatures.squareSize * i, board.size * screenFeatures.squareSize), BLACK)
 
     for i in range(board.size + 1):
-        draw_line_v((0, ScreenFeatures.squareSize * i), (board.size * ScreenFeatures.squareSize, ScreenFeatures.squareSize * i), BLACK)
+        draw_line_v((0, screenFeatures.squareSize * i), (board.size * screenFeatures.squareSize, screenFeatures.squareSize * i), BLACK)
 
-    draw_rectangle(board.size * ScreenFeatures.squareSize + 1, 0, ScreenFeatures.screenWidth - 1, ScreenFeatures.screenHeight, WHITE)
-    draw_rectangle(board.size * ScreenFeatures.squareSize + 1, 0, ScreenFeatures.screenWidth - 1, ScreenFeatures.screenHeight, fade(DARKGREEN, 0.5))
+    draw_rectangle(board.size * screenFeatures.squareSize + 1, 0, screenFeatures.screenWidth - 1, screenFeatures.screenHeight, WHITE)
+    draw_rectangle(board.size * screenFeatures.squareSize + 1, 0, screenFeatures.screenWidth - 1, screenFeatures.screenHeight, fade(DARKGREEN, 0.5))
 
 
 
 def PlayScreen(board:Board, menu:Menu, ScreenFeatures:ScreenFeatures, screen_list, mouse, clicked):
     clear_background(DARKGREEN)
     DrawBoardGrid(board, ScreenFeatures)
+    print("next turn", nextTurn(board))
 
     draw_rectangle(int(menu.goBackButton.x), int(menu.goBackButton.y), int(menu.goBackButton.width), int(menu.goBackButton.height), WHITE)
     draw_rectangle(int(menu.goForwardButton.x), int(menu.goForwardButton.y), int(menu.goForwardButton.width), int(menu.goForwardButton.height), WHITE)
@@ -113,22 +119,22 @@ def PlayScreen(board:Board, menu:Menu, ScreenFeatures:ScreenFeatures, screen_lis
               int(menu.goForwardButton.y + menu.goForwardButton.height / 2 - 15), 30, BLACK if canGoFoward(board) else GRAY)
     draw_text("Save game", int(menu.saveGameButton.x - measure_text("Save game", 30) / 2 + menu.saveGameButton.width / 2),
               int(menu.saveGameButton.y + menu.saveGameButton.height / 2 - 15), 30, BLACK)
-
     if clicked:
         CheckButtonPressed(menu, board, screen_list, mouse)
     UpdateDrawingState(board, ScreenFeatures)
-    if nextTurn(board) == PlayerType.BLACK_PLAYER:
-        SetHelpers(board, PlayerType.BLACK_PLAYER)
+    if nextTurn(board) == PlayerType.BLACK_PLAYER.value:
+        ("entro")
+        SetHelpers(board, PlayerType.BLACK_PLAYER.value)
         CheckPiecePlayed(board, ScreenFeatures, clicked, mouse)
-    elif nextTurn(board) == PlayerType.WHITE_PLAYER:
-        computerMove(board, PlayerType.WHITE_PLAYER)
+    elif nextTurn(board) == PlayerType.WHITE_PLAYER.value:
+        computerMove(board, PlayerType.WHITE_PLAYER.value)
 
     draw_text("Your score:", int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 30), 20, WHITE)
-    val = getScore(board, PlayerType.BLACK_PLAYER)
+    val = getScore(board, PlayerType.BLACK_PLAYER.value)
     draw_text(str(val), int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 50), 20, WHITE)
 
     draw_text("CPU score:", int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 100), 20, WHITE)
-    val = getScore(board, PlayerType.WHITE_PLAYER)
+    val = getScore(board, PlayerType.WHITE_PLAYER.value)
     draw_text(str(val), int(menu.saveGameButton.x), int(menu.saveGameButton.height + menu.saveGameButton.y + 120), 20, WHITE)
 
     if isGameOver(board):
@@ -250,34 +256,34 @@ def LoadFileScreen(board: Board, ScreenFeatures: ScreenFeatures, screen_list, sl
         screen_list[0] = ScreenFlag.MENU
     draw_text("CANCEL", int(ScreenFeatures.screenWidth / 2 - measure_text("CANCEL", 30) / 2 + int(cancel_rect.x / 2)), int(cancel_rect.y + 10), 30, WHITE)
 
-def UpdateDrawingState(board, ScreenFeatures: ScreenFeatures):
+def UpdateDrawingState(board, screenFeatures: ScreenFeatures):
 
-    offset = int((ScreenFeatures.squareSize / 2 - 5) * 0.25)
+    offset = int((screenFeatures.squareSize / 2 - 5) * 0.25)
     for i in range(board.size):
         for j in range(board.size):
-            if board.state[i][j].pieceType == StateFlags.VOID:
+            if board.state[i][j].pieceType == StateFlags.VOID.value:
                 pass
-            elif board.state[i][j].pieceType == StateFlags.BLACK_PIECE:
-                draw_circle(int(i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(ScreenFeatures.squareSize / 2 - 5), BLACK)
-                draw_circle_gradient(int(i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2 - offset),
-                                     int(j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2 - offset),
-                                     int((ScreenFeatures.squareSize / 2 - 5) * 0.5), fade(WHITE, 0.15), fade(WHITE, 0))
-            elif board.state[i][j].pieceType == StateFlags.WHITE_PIECE:
-                draw_circle(int(i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(ScreenFeatures.squareSize / 2 - 5), RAYWHITE)
-                draw_circle_gradient(int(i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2 - offset),
-                                     int(j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2 - offset),
-                                     int((ScreenFeatures.squareSize / 2 - 5) * 0.5), fade(BLACK, 0.15), fade(BLACK, 0))
-            elif board.state[i][j].pieceType == StateFlags.HELPER:
-                draw_circle(int(i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(ScreenFeatures.squareSize / 2 - 5), DARKGRAY)
-                draw_circle(int(i * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(j * ScreenFeatures.squareSize + ScreenFeatures.squareSize / 2),
-                           int(ScreenFeatures.squareSize / 2 - 7), DARKGREEN)
+            elif board.state[i][j].pieceType == StateFlags.BLACK_PIECE.value:
+                draw_circle(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(screenFeatures.squareSize / 2 - 5), BLACK)
+                draw_circle_gradient(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2 - offset),
+                                     int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2 - offset),
+                                     int((screenFeatures.squareSize / 2 - 5) * 0.5), fade(WHITE, 0.15), fade(WHITE, 0))
+            elif board.state[i][j].pieceType == StateFlags.WHITE_PIECE.value:
+                draw_circle(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(screenFeatures.squareSize / 2 - 5), RAYWHITE)
+                draw_circle_gradient(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2 - offset),
+                                     int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2 - offset),
+                                     int((screenFeatures.squareSize / 2 - 5) * 0.5), fade(BLACK, 0.15), fade(BLACK, 0))
+            elif board.state[i][j].pieceType == StateFlags.HELPER.value:
+                draw_circle(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(screenFeatures.squareSize / 2 - 5), DARKGRAY)
+                draw_circle(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2),
+                           int(screenFeatures.squareSize / 2 - 7), DARKGREEN)
 def getMenu(board, ScreenFeatures: ScreenFeatures):
     goBackButton = Rectangle(board.size * ScreenFeatures.squareSize + 20, 30,
                                ScreenFeatures.screenWidth - board.size * ScreenFeatures.squareSize - 40, 75)
@@ -353,6 +359,7 @@ def MenuScreen(ScreenFeatures, frame_count, MenuOptions: MenuOptions, screen_fla
 def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, screen_list):
     clear_background(DARKGREEN)
     DrawBoardGrid(board, screenFeatures)
+    print(piece.pieceType, "piece")
     margin = board.size * screenFeatures.squareSize
     free_space = screenFeatures.screenWidth - margin
     radius = free_space / 4
@@ -360,7 +367,7 @@ def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, scr
     white = Vector2(black.x, 50 + black.y + 2 * radius)
     draw_circle_v(black, radius, BLACK)
     draw_circle_v(white, radius, WHITE)
-    is_black = piece.pieceType == PlayerType.BLACK_PLAYER
+    is_black = piece.pieceType == PlayerType.BLACK_PLAYER.value
     draw_circle_v(black if is_black else white, radius // 10, RED)
 
     mouse = get_mouse_position()
@@ -378,18 +385,18 @@ def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, scr
 
         circle = Vector2(x * screenFeatures.squareSize + screenFeatures.squareSize / 2, y * screenFeatures.squareSize + screenFeatures.squareSize / 2)
 
-        if piece.pieceType == PlayerType.BLACK_PLAYER:
+        if piece.pieceType == PlayerType.BLACK_PLAYER.value:
             draw_circle_v(circle, screenFeatures.squareSize / 2 - 5, fade(BLACK, 0.5))
-        elif piece.pieceType == PlayerType.WHITE_PLAYER:
+        elif piece.pieceType == PlayerType.WHITE_PLAYER.value:
             draw_circle_v(circle, screenFeatures.squareSize / 2 - 5, fade(WHITE, 0.5))
 
         if check_collision_point_rec(mouse, helper_rect) and clicked:
-            board.state[x][y].pieceType = PlayerType.BLACK_PLAYER if is_black else PlayerType.WHITE_PLAYER
-            board.initialState[x][y].pieceType = PlayerType.BLACK_PLAYER if is_black else PlayerType.WHITE_PLAYER
+            board.state[x][y].pieceType = PlayerType.BLACK_PLAYER.value if is_black else PlayerType.WHITE_PLAYER.value
+            board.initialState[x][y].pieceType = PlayerType.BLACK_PLAYER.value if is_black else PlayerType.WHITE_PLAYER.value
 
         if check_collision_point_rec(mouse, helper_rect) and (is_mouse_button_pressed(1) or is_mouse_button_down(1)):
-            board.state[x][y].pieceType = StateFlags.VOID
-            board.initialState[x][y].pieceType = StateFlags.VOID
+            board.state[x][y].pieceType = StateFlags.VOID.value
+            board.initialState[x][y].pieceType = StateFlags.VOID.value
 
     exit_rect = Rectangle(int(margin + 30), int(screenFeatures.screenHeight - 150), int((free_space - 60)), 100)
     draw_rectangle_rec(exit_rect, LIGHTGRAY)
@@ -400,9 +407,9 @@ def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, scr
     draw_text("Save", int(save_rect.x + save_rect.width / 2 - measure_text("Save", 30) / 2), int(save_rect.y + save_rect.height / 2 - 15), 30, WHITE)
 
     if clicked and check_collision_point_circle(mouse, black, radius):
-        piece.pieceType = PlayerType.BLACK_PLAYER
+        piece.pieceType = PlayerType.BLACK_PLAYER.value
     if clicked and check_collision_point_circle(mouse, white, radius):
-        piece.pieceType = PlayerType.WHITE_PLAYER
+        piece.pieceType = PlayerType.WHITE_PLAYER.value
 
     if clicked and check_collision_point_rec(mouse, save_rect):
         screen_list[0] = ScreenFlag.SAVE
