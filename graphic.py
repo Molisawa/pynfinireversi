@@ -46,13 +46,10 @@ class ScreenFeatures:
 def CheckButtonPressed(menu: Menu, board, screen, mouse):
     if check_collision_point_rec(mouse, menu.goBackButton):
         goBack(board)
-        print("go back")
     elif check_collision_point_rec(mouse, menu.goForwardButton):
         goForward(board)
-        print("go forward")
     elif check_collision_point_rec(mouse, menu.saveGameButton):
         screen[0] = "SAVE"
-        print("save game")
 
 def getDirectories():
     path = "saved/"
@@ -107,7 +104,6 @@ def DrawBoardGrid(board:Board, screenFeatures:ScreenFeatures):
 def PlayScreen(board:Board, menu:Menu, ScreenFeatures:ScreenFeatures, screen_list, mouse, clicked):
     clear_background(DARKGREEN)
     DrawBoardGrid(board, ScreenFeatures)
-    print("next turn", nextTurn(board))
 
     draw_rectangle(int(menu.goBackButton.x), int(menu.goBackButton.y), int(menu.goBackButton.width), int(menu.goBackButton.height), WHITE)
     draw_rectangle(int(menu.goForwardButton.x), int(menu.goForwardButton.y), int(menu.goForwardButton.width), int(menu.goForwardButton.height), WHITE)
@@ -142,13 +138,13 @@ def PlayScreen(board:Board, menu:Menu, ScreenFeatures:ScreenFeatures, screen_lis
                   int(ScreenFeatures.screenHeight / 2 - 40), 80, GRAY)
         text = ""
         color = GRAY
-        if getWinner(board) == Winners.WINNER:
+        if getWinner(board) == Winners.WINNER.name:
             text = "You win!"
             color = GREEN
-        elif getWinner(board) == Winners.LOSER:
+        elif getWinner(board) == Winners.LOSER.name:
             text = "You lose!"
             color = RED
-        elif getWinner(board) == Winners.TIE:
+        elif getWinner(board) == Winners.TIE.name:
             text = "It's a tie!"
         draw_text(text, int((ScreenFeatures.squareSize * board.size) / 2 - measure_text(text, 60) / 2),
                   int(ScreenFeatures.screenHeight / 2 - 30 + 80 + 10), 60, color)
@@ -359,7 +355,6 @@ def MenuScreen(ScreenFeatures, frame_count, MenuOptions: MenuOptions, screen_fla
 def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, screen_list):
     clear_background(DARKGREEN)
     DrawBoardGrid(board, screenFeatures)
-    print(piece.pieceType, "piece")
     margin = board.size * screenFeatures.squareSize
     free_space = screenFeatures.screenWidth - margin
     radius = free_space / 4

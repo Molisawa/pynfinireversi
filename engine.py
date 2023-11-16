@@ -33,8 +33,9 @@ class Piece:
 class Movement:
     def __init__(self, pieceType=None, x=None, y=None):
         self.pieceType = pieceType
-        self.x = x
-        self.y = y
+        self.x = x if x is not None else 0
+        self.y = y if y is not None else 0
+
 class Player:
     def __init__(self, isHuman):
         self.isHuman = isHuman
@@ -68,7 +69,6 @@ def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     board.player1 = player1
     board.player2 = player2
     initializeBoard(board)
-    printBoard(board)
     return
     # Después de initializeBoard(board)
 
@@ -128,17 +128,17 @@ def computerMove(board, player):
         makeRealMove(board, bestMinimaxMove(board, player))
 
 def initializeBoard(board:Board):
-    board.lastPiecetypeMoved = 0
+    board.lastPiecetypeMoved = 2
 
     board.state = [[Piece() for _ in range(board.size)] for _ in range(board.size)]
     for i in range(board.size):
         for j in range(board.size):
-            board.state[i][j].pieceType = 3
+            board.state[i][j].pieceType = 0
 
     board.initialState = [[Piece() for _ in range(board.size)] for _ in range(board.size)]
     for i in range(board.size):
         for j in range(board.size):
-            board.initialState[i][j].pieceType = 3
+            board.initialState[i][j].pieceType = 0
 
     board.state[board.size // 2 - 1][board.size // 2 - 1].pieceType = 2
     board.state[board.size // 2][board.size // 2].pieceType = 2
@@ -163,12 +163,13 @@ def setCustomBoardState(board):
 def isGameOver(board):
     return not canMove(board, 1) and not canMove(board, 0)
 
-def getWinner(board):
+def getWinner(board:Board):
+
     white_moves = 0
     black_moves = 0
     for i in range(board.size):
         for j in range(board.size):
-            if board.state[i][j].pieceType == 0:
+            if board.state[i][j].pieceType == 2:
                 white_moves += 1
             if board.state[i][j].pieceType == 1:
                 black_moves += 1
@@ -179,7 +180,7 @@ def getWinner(board):
     else:
         return "WINNER"
 
-def canGoBack(board):
+def canGoBack(board:Board):
     return board.noOfMovesBack > 0
 
 def canGoFoward(board):
@@ -193,14 +194,12 @@ def SetHelpers(board:Board, player:PlayerType):
         return
     for i in range(board.size):
         for j in range(board.size):
-            if board.state[i][j].pieceType == 3:
-                m = Movement()
-                m.pieceType = player
-                m.x = i
-                m.y = j
+            if board.state[i][j].pieceType == 0:
+                m = Movement(player, i, j)
                 if isValidMove(board, m):
                     possibleMoves += 1
                     board.state[i][j].pieceType = 3
+    print("Possible moves: ", possibleMoves)
 
 def getScore(board, piece):
     score = 0
@@ -211,9 +210,9 @@ def getScore(board, piece):
     return score
 
 def canSkipBlackPiece(board):
-    return not isGameOver(board) and not canMove(board, 1) and board.lastPiecetypeMoved == 0 and board.noOfMovesFoward == 0
+    return not isGameOver(board) and not canMove(board, 1) and board.lastPiecetypeMoved == 2 and board.noOfMovesFoward == 0
 
-def cleanHelpers(board):
+def cleanHelpers(board:Board):
     bestScore = 0
     x = 0
     y = 0
@@ -294,11 +293,8 @@ def getAllPossibleMoves(board, pieceType):
     moves = [Movement()]
     for i in range(board.size):
         for j in range(board.size):
-            if board.state[i][j].pieceType == 3 or board.state[i][j].pieceType == 3:
-                m = Movement()
-                m.pieceType = pieceType
-                m.x = i
-                m.y = j
+            if board.state[i][j].pieceType == 0 or board.state[i][j].pieceType == 3:
+                m = Movement(pieceType, i, j)
                 if isValidMove(board, m):
                     moves.append(m)
                     possibleMoves += 1
