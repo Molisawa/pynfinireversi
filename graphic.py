@@ -330,12 +330,12 @@ def MenuScreen(ScreenFeatures, frame_count, MenuOptions: MenuOptions, screen_fla
               int(ScreenFeatures.screenWidth // 2 - measure_text("INFINIREVERSI", 30) // 2),
               int(ScreenFeatures.screenHeight // 2 - 375), 30, WHITE)
 
-    # frame = math.floor(frame_count * 0.383)
-    # put_zero = frame < 10
-    # image_path = "resources/frames/frame_{}{}_delay-0.03s.gif".format("0" if put_zero else "", frame)
-    # image = load_image(image_path.encode('utf-8'))
-    # texture = load_texture_from_image(image)
-    # draw_texture(texture, int(ScreenFeatures.screenWidth / 2 - image.width / 2), int(ScreenFeatures.screenHeight * 0.1), WHITE)
+    frame = math.floor(frame_count * 0.383)
+    put_zero = frame < 10
+    image_path = "resources/frames/frame_{}{}_delay-0.03s.gif".format("0" if put_zero else "", frame)
+    image = load_image(image_path.encode('utf-8'))
+    texture = load_texture_from_image(image)
+    draw_texture(texture, int(ScreenFeatures.screenWidth / 2 - image.width / 2), int(ScreenFeatures.screenHeight * 0.1), WHITE)
     draw_rectangle_rec(MenuOptions.startGameButton, LIGHTGRAY)
     draw_rectangle_rec(MenuOptions.loadGameButton, LIGHTGRAY)
     draw_rectangle_rec(MenuOptions.editorButton, LIGHTGRAY)
@@ -356,8 +356,8 @@ def MenuScreen(ScreenFeatures, frame_count, MenuOptions: MenuOptions, screen_fla
               int(ScreenFeatures.screenHeight // 2 + 375),
               15, WHITE)
 
-    draw_text("Created by Molisawa",
-              int(ScreenFeatures.screenWidth - measure_text("Created by Molisawa", 30) // 2),
+    draw_text("Created by OSB",
+              int(ScreenFeatures.screenWidth - measure_text("Created by OSD", 30) // 2),
               int(ScreenFeatures.screenHeight // 2 + 375),
               15, WHITE)
 

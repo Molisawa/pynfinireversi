@@ -111,9 +111,9 @@ def getScorePosition(board:Board, pieceType):
             if board.state[i][j].pieceType == pieceType:
                 score += valores[i][j]
 
-    for i in range(board.size):
-        del valores[i]
-    del valores
+    for row in valores:
+        row.clear()
+    valores.clear()
     return score
 
 def computerMove(board, player):
@@ -444,16 +444,16 @@ def MinimaxSolver(depth, alpha, beta, board1, moveEval, player):
     elif isGameOver(board1):
         return getScore(board1, moveEval.pieceType)
 
-    max = moveEval.pieceType == player
+    is_max = moveEval.pieceType == player
 
     opponent = PlayerType.BLACK_PLAYER.value if moveEval.pieceType == PlayerType.WHITE_PLAYER.value else PlayerType.WHITE_PLAYER.value
 
-    if (max and not canMove(board1, PlayerType.WHITE_PLAYER.value)) or (not max and not canMove(board1, opponent)):
+    if (is_max and not canMove(board1, PlayerType.WHITE_PLAYER.value)) or (not is_max and not canMove(board1, opponent)):
         return MinimaxSolver(depth - 1, alpha, beta, board1, moveEval, player)
 
     board = copyBoard(board1)
     totalScore = 0
-    if max:
+    if is_max:
         totalScore = float('-inf')
         all_moves = getAllPossibleMoves(board, PlayerType.WHITE_PLAYER.value)
         number_of_moves = getNumberOfMoves(board, PlayerType.WHITE_PLAYER.value)
@@ -477,7 +477,7 @@ def MinimaxSolver(depth, alpha, beta, board1, moveEval, player):
             beta = min(beta, score)
             if beta <= alpha:
                 break
-    destructBoard(board)
+    # destructBoard(board)
     return totalScore
 
 def destructBoard(board):
