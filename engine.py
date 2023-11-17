@@ -183,7 +183,7 @@ def getWinner(board:Board):
 def canGoBack(board:Board):
     return board.noOfMovesBack > 0
 
-def canGoFoward(board):
+def canGoFoward(board:Board):
     return board.noOfMovesFoward > 0
 
 def SetHelpers(board:Board, player:PlayerType):
@@ -513,7 +513,7 @@ def goBack(board):
         for move in m:
             makeRealMove(board, move)
 
-def goForward(board):
+def goForward(board:Board):
     if canGoFoward(board):
         m = board.historyForward[:-1]
         board.historyBack += [board.historyForward[-1]]
@@ -540,7 +540,7 @@ def removeHistoryFoward(board):
     board.historyForward = [Movement()]
     board.noOfMovesFoward = 0
 
-def makeRealMove(board, lastMove):
+def makeRealMove(board:Board, lastMove):
     board.lastPiecetypeMoved = lastMove.pieceType
     if (
         lastMove.x < 0
@@ -591,7 +591,7 @@ def makeMove(board, lastMove):
 
     destructBoard(tmp)
 
-def saveGame(board):
+def saveGame(board:Board):
     data = {
         "board_size": board.size,
         "game_difficulty": board.difficulty,

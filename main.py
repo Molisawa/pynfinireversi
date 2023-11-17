@@ -43,27 +43,29 @@ def main():
     menu = getMenu(board, screen_features)
     menu_options = getMenuOptions(screen_features)
 
-    while not window_should_close():  # Detectar botón de cierre de la ventana o tecla ESC
+    while not window_should_close():  
         frame_counter = (frame_counter + 1) % 60
         mouse = get_mouse_position()
         clicked = 0
+        key = 0
+
         if is_mouse_button_pressed(0):
             clicked = 1
-
-        key = get_key_pressed()
-
-        while key > 0:
-            if 32 <= key <= 125 and num_of_chars < 10:
-                num_of_chars += 1
-                filename += chr(key)
-            key = get_key_pressed()
 
         if is_key_pressed(8):
             num_of_chars -= 1
             if num_of_chars < 0:
                 num_of_chars = 0
             filename = filename[:-1]
+
+        key = get_key_pressed()
+
+        if key > 0 and 32 <= key <= 125 and num_of_chars < 10:
+            num_of_chars += 1
+            filename += chr(key)
+
         begin_drawing()
+
         if screen_list[0] == ScreenFlag.MENU:
             update_music_stream(music)
             MenuScreen(screen_features, frame_counter, menu_options, screen_list, board, next_screen_list)
@@ -72,7 +74,8 @@ def main():
             PlayScreen(board, menu, screen_features, screen_list, mouse, clicked)
             draw_fps(10, 10)
         elif screen_list[0] == ScreenFlag.SAVE:
-            screen_list[0], next_screen_list[0] = ShowFileSaverScreen(board, screen_features, filename, frame_counter, mouse, screen_list, num_of_chars, last_screen_list[0])
+            last_screen_list[0] = ScreenFlag.SAVE
+            ShowFileSaverScreen(board, screen_features, filename, frame_counter, mouse, screen_list, num_of_chars, last_screen_list[0])
         elif screen_list[0] == ScreenFlag.LOAD:
             LoadFileScreen(board, screen_features, screen_list, slider)
         elif screen_list[0] == ScreenFlag.EDITOR:
@@ -80,8 +83,6 @@ def main():
             EditorScreen(screen_features, board, piece_selected, screen_list)
         elif screen_list[0] == ScreenFlag.CONFIG_GAME:
             [custom_board_size[0]] = ConfigGameScreen(screen_features, board, screen_list, [custom_board_size[0]], difficulty_list, next_screen_list)
-
-        
         
         end_drawing()
 
