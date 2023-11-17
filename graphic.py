@@ -89,15 +89,16 @@ def CheckPiecePlayed(board: Board, screenFeatures: ScreenFeatures, clicked, mous
                         UpdateDrawingState(board, screenFeatures)
 
 
-def DrawBoardGrid(board:Board, screenFeatures:ScreenFeatures):
+def DrawBoardGrid(board: Board, screenFeatures: ScreenFeatures):
     for i in range(board.size + 1):
-        draw_line_v((screenFeatures.squareSize * i, 0), (screenFeatures.squareSize * i, board.size * screenFeatures.squareSize), BLACK)
+        draw_line_v((int(screenFeatures.squareSize * i), 0), (int(screenFeatures.squareSize * i), int(board.size * screenFeatures.squareSize)), BLACK)
 
     for i in range(board.size + 1):
-        draw_line_v((0, screenFeatures.squareSize * i), (board.size * screenFeatures.squareSize, screenFeatures.squareSize * i), BLACK)
+        draw_line_v((0, int(screenFeatures.squareSize * i)), (int(board.size * screenFeatures.squareSize), int(screenFeatures.squareSize * i)), BLACK)
 
-    draw_rectangle(board.size * screenFeatures.squareSize + 1, 0, screenFeatures.screenWidth - 1, screenFeatures.screenHeight, WHITE)
-    draw_rectangle(board.size * screenFeatures.squareSize + 1, 0, screenFeatures.screenWidth - 1, screenFeatures.screenHeight, fade(DARKGREEN, 0.5))
+    draw_rectangle(int(board.size * screenFeatures.squareSize) + 1, 0, int(screenFeatures.screenWidth - 1), int(screenFeatures.screenHeight), WHITE)
+    draw_rectangle(int(board.size * screenFeatures.squareSize) + 1, 0, int(screenFeatures.screenWidth - 1), int(screenFeatures.screenHeight), fade(DARKGREEN, 0.5))
+
 
 
 
@@ -157,7 +158,7 @@ def PlayScreen(board:Board, menu:Menu, ScreenFeatures:ScreenFeatures, screen_lis
         destructBoard(board)
         screen_list[0] = ScreenFlag.MENU
 
-def ShowFileSaverScreen(board, ScreenFeatures, filename, frame_counter, mouse, screen, num_of_chars, last_screen):
+def ShowFileSaverScreen(board, ScreenFeatures, filename, frame_counter, mouse, screen_list, num_of_chars, last_screen):
     clear_background(RAYWHITE)
 
     width = max(measure_text(filename, 30), measure_text("XXXXXXXX", 30)) + 30
@@ -199,17 +200,19 @@ def ShowFileSaverScreen(board, ScreenFeatures, filename, frame_counter, mouse, s
         save_file_text(f"saved/{filename}.brd", saveGame(board))
         filename = ""
         num_of_chars = 0
-        return screen, last_screen  # Return a tuple here
+        # return screen_list, last_screen  # Return a tuple here
+        screen_list[0] = last_screen
 
 
     if is_mouse_button_pressed(0) and over_cancel:
         filename = ""
         num_of_chars = 0
-        return screen, last_screen  # Return a tuple here
+        screen_list[0] = last_screen
+        # return screen_list, last_screen  # Return a tuple here
 
-    return screen, last_screen
+    # return screen_list, last_screen
 
-def LoadFileScreen(board: Board, ScreenFeatures: ScreenFeatures, screen_list, slider):
+def LoadFileScreen(board: Board, ScreenFeatures: ScreenFeatures, screen_list, slider: Slider):
     directory = getDirectories()
     clear_background(RAYWHITE)
     bar = (50 * directory.NumberOfDirectories + 10) > (ScreenFeatures.screenHeight - 80)
@@ -264,7 +267,7 @@ def LoadFileScreen(board: Board, ScreenFeatures: ScreenFeatures, screen_list, sl
         screen_list[0] = ScreenFlag.MENU
     draw_text("CANCEL", int(ScreenFeatures.screenWidth / 2 - measure_text("CANCEL", 30) / 2 + int(cancel_rect.x / 2)), int(cancel_rect.y + 10), 30, WHITE)
 
-def UpdateDrawingState(board, screenFeatures: ScreenFeatures):
+def UpdateDrawingState(board:Board, screenFeatures: ScreenFeatures):
 
     offset = int((screenFeatures.squareSize / 2 - 5) * 0.25)
     for i in range(board.size):
@@ -425,7 +428,7 @@ def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, scr
         destructBoard(board)
         screen_list[0] = ScreenFlag.MENU
 
-def CheckMenuButtonPressed(menuOptions: MenuOptions, screen_list, board, next_screen_list):
+def CheckMenuButtonPressed(menuOptions: MenuOptions, screen_list, board:Board, next_screen_list):
     clicked = is_mouse_button_pressed(0)
     mouse = get_mouse_position()
 
@@ -439,7 +442,7 @@ def CheckMenuButtonPressed(menuOptions: MenuOptions, screen_list, board, next_sc
     if clicked and check_collision_point_rec(mouse, menuOptions.editorButton):
         screen_list[0] = ScreenFlag.CONFIG_GAME
         next_screen_list[0] = ScreenFlag.EDITOR
-        board.Custom = True
+        board.custom = True
 
     return screen_list[0], next_screen_list[0]
 

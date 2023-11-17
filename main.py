@@ -74,7 +74,8 @@ def main():
             PlayScreen(board, menu, screen_features, screen_list, mouse, clicked)
             draw_fps(10, 10)
         elif screen_list[0] == ScreenFlag.SAVE:
-            last_screen_list[0] = ScreenFlag.SAVE
+            last_screen_list[0] = ScreenFlag.MENU
+            screen_list[0] = ScreenFlag.SAVE
             ShowFileSaverScreen(board, screen_features, filename, frame_counter, mouse, screen_list, num_of_chars, last_screen_list[0])
         elif screen_list[0] == ScreenFlag.LOAD:
             LoadFileScreen(board, screen_features, screen_list, slider)

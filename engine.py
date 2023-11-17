@@ -42,17 +42,17 @@ class Player:
 
 class Board:
     def __init__(self):
-        self.state = None
+        self.size = 6
+        self.state = [[Piece() for _ in range(self.size)] for _ in range(self.size)]  # Inicializar con objetos Piece()
         self.difficulty = None
-        self.historyBack = None
+        self.historyBack = []
         self.historyForward = None
-        self.noOfMovesBack = None
+        self.noOfMovesBack = 0
         self.lastPiecetypeMoved = None
-        self.noOfMovesFoward = None
+        self.noOfMovesFoward = 0
         self.initialized = None
-        self.size = 8
-        self.custom = None
-        self.initialState = None
+        self.custom = False
+        self.initialState = [[Piece() for _ in range(self.size)] for _ in range(self.size)]  # Inicializar con objetos Piece()
         self.player1 = None
         self.player2 = None
 
@@ -61,9 +61,9 @@ def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     board.initialized = 1
     board.difficulty = difficulty
     board.noOfMovesBack = 0
-    board.historyBack = [Movement()]
+    board.historyBack = []
     board.noOfMovesFoward = 0
-    board.historyForward = [Movement()]
+    board.historyForward = []
     board.size = size
     board.custom = custom
     board.player1 = player1
@@ -155,10 +155,11 @@ def printBoard(board):
         print([piece.pieceType for piece in row])
 
 
-def setCustomBoardState(board):
+def setCustomBoardState(board:Board):
     for k in range(board.size):
         for l in range(board.size):
             board.state[k][l].pieceType = board.initialState[k][l].pieceType
+    return board
 
 def isGameOver(board):
     return not canMove(board, 1) and not canMove(board, 0)
@@ -402,7 +403,7 @@ def isValidMove(board:Board, lastMove:Movement):
 def canMove(board, pieceType:PlayerType):
     return getNumberOfMoves(board, pieceType) > 0
 
-def copyBoard(board):
+def copyBoard(board:Board):
     tmp = Board()
     initializeGame(tmp, board.size, board.difficulty, board.custom, board.player1, board.player2)
 
@@ -591,34 +592,43 @@ def makeMove(board, lastMove):
 
     destructBoard(tmp)
 
+
 def saveGame(board:Board):
     data = {
         "board_size": board.size,
-        "game_difficulty": board.difficulty,
+        "game_difficulty": board.difficulty.name,
         "movements": [
             {"piece_type": move.pieceType, "x": move.x, "y": move.y} for move in board.historyBack
         ],
         "custom": board.custom
     }
+
     if board.custom:
         data["initial_board"] = [
-            [{"piece_type": cell.pieceType} for cell in row] for row in board.initialState
+            {"piece_type": cell.pieceType} for row in board.initialState for cell in row
         ]
-    return json.dumps(data, indent=None)
+
+    return json.dumps(data)
 
 def loadGame(data):
     data_json = json.loads(data)
     size = data_json["board_size"]
     difficulty = data_json["game_difficulty"]
     is_custom = data_json["custom"]
-    board = Board(size, difficulty, is_custom)
+    
+    # Crear una instancia de la clase Board sin parámetros
+    board = Board()
+    initializeGame(board, size, difficulty, is_custom, Player(True), Player(True))
 
     if is_custom:
         initial_board = data_json["initial_board"]
+        matrix_6x6 = [initial_board[i*size:(i+1)*size] for i in range(size)]
         for i in range(size):
             for j in range(size):
-                board.initialState[i][j] = Piece(initial_board[i][j]["piece_type"])
-        setCustomBoardState(board)
+                board.initialState[i][j].pieceType = matrix_6x6[i][j]["piece_type"]
+                print(board.initialState[i][j].pieceType)
+        custom_b = setCustomBoardState(board)
+        printBoard(custom_b)
 
     for move in data_json["movements"]:
         pieceType = move["piece_type"]
@@ -626,5 +636,6 @@ def loadGame(data):
         y = move["y"]
         m = Movement(pieceType, x, y)
         makeRealMove(board, m)
-
+    printBoard(board)
     return board
+
