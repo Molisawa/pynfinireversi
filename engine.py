@@ -3,6 +3,9 @@ import random
 import time
 import sys
 import json
+import copy
+from builtins import max as fmax
+from builtins import min as fmin
 
 
 class PlayerType(Enum):
@@ -76,10 +79,7 @@ def getPointEvaluator(board, pieceType):
     return getScorePosition(board, pieceType)
 
 def getScorePosition(board:Board, pieceType):
-    valores = [[0 for _ in range(board.size)] for _ in range(board.size)]
-
-    for i in range(board.size):
-        valores[i] = [0 for _ in range(board.size)]
+    valores = [[0] * board.size for _ in range(board.size)]
 
     for i in range(board.size):
         valores[1][i] = -20
@@ -96,14 +96,13 @@ def getScorePosition(board:Board, pieceType):
             if j < board.size - 4 and i < board.size - 4:
                 valores[j + 2][i + 2] = 4
 
-    for i in range(1, 3):
-        value = i % 2
-        isNegative = -1 if value else 1
-        tmp = (100 // (value + 1) * isNegative)
-        valores[value][value] = (100 // (value + 1) * isNegative)
-        valores[board.size - 1 - value][value] = (100 // (value + 1) * isNegative)
-        valores[value][board.size - 1 - value] = (100 // (value + 1) * isNegative)
-        valores[board.size - 1 - value][board.size - value - 1] = (100 // (value + 1) * isNegative)
+    for value in range(1, 3):
+        is_negative = -1 if value % 2 else 1
+        tmp = 100 / (value + 1) * is_negative
+        valores[value][value] = tmp
+        valores[board.size - 1 - value][value] = tmp
+        valores[value][board.size - 1 - value] = tmp
+        valores[board.size - 1 - value][board.size - value - 1] = tmp
 
     score = 0
     for i in range(board.size):
@@ -111,9 +110,6 @@ def getScorePosition(board:Board, pieceType):
             if board.state[i][j].pieceType == pieceType:
                 score += valores[i][j]
 
-    for row in valores:
-        row.clear()
-    valores.clear()
     return score
 
 def computerMove(board, player):
@@ -254,32 +250,21 @@ def bestMinimaxMove(board, player):
     global nodes
     nodes = 0
 
-    allMoves = getAllPossibleMoves(board, player)
-    bestMove = Movement()
-    bestMove.pieceType = 6
-    bestMove.x = -1
-    bestMove.y = 1
+    all_moves = getAllPossibleMoves(board, player)
+    best_move = Movement(pieceType=PlayerType.NONE, x=-1, y=1)
     score = -sys.maxsize
-    numberOfMoves = getNumberOfMoves(board, player)
+    number_of_moves = getNumberOfMoves(board, player)
 
-    boards = [Board() for _ in range(numberOfMoves)]
-    for i in range(numberOfMoves):
-        tmp = copyBoard(board)
+    boards = [copy.deepcopy(board) for _ in range(number_of_moves)]
+    for i in range(number_of_moves):
+        tmp = copy.deepcopy(board)
 
-        m = Movement()
-        m.pieceType = player
-        m.x = allMoves[i].x
-        m.y = allMoves[i].y
+        m = Movement(pieceType=player, x=all_moves[i].x, y=all_moves[i].y)
 
-        scoreTemp = MinimaxSolver(5, -sys.maxsize, sys.maxsize, tmp, m, player)
-        if scoreTemp > score:
-            score = scoreTemp
-            bestMove = m
-        destructBoard(tmp)
-
-    print("Nodes searched = ", nodes)
-    return bestMove
-
+        score_temp = MinimaxSolver(5, -sys.maxsize, sys.maxsize, tmp, m, player)
+        if score_temp > score:
+            score = score_temp
+            best_move = m
 def randomMovement(board, player):
     possibleMoves = getNumberOfMoves(board, player)
     moves = getAllPossibleMoves(board, player)
@@ -434,51 +419,50 @@ def nextTurn(board:Board):
     else:
         return PlayerType.NONE.value
 
-def MinimaxSolver(depth, alpha, beta, board1, moveEval, player):
+def MinimaxSolver(depth, alpha, beta, board1, move_eval, player):
     global nodes
     nodes += 1
 
-    makeMove(board1, moveEval)
+    makeMove(board1, move_eval)
     if depth == 0:
-        return getPointEvaluator(board1, moveEval.pieceType)
+        return getPointEvaluator(board1, move_eval.pieceType)
     elif isGameOver(board1):
-        return getScore(board1, moveEval.pieceType)
+        return getScore(board1, move_eval.pieceType)
 
-    is_max = moveEval.pieceType == player
+    max_turn = move_eval.pieceType == player
 
-    opponent = PlayerType.BLACK_PLAYER.value if moveEval.pieceType == PlayerType.WHITE_PLAYER.value else PlayerType.WHITE_PLAYER.value
+    opponent = PlayerType.WHITE_PLAYER if move_eval.pieceType == PlayerType.BLACK_PLAYER else PlayerType.BLACK_PLAYER
 
-    if (is_max and not canMove(board1, PlayerType.WHITE_PLAYER.value)) or (not is_max and not canMove(board1, opponent)):
-        return MinimaxSolver(depth - 1, alpha, beta, board1, moveEval, player)
+    if (max_turn and not canMove(board1, PlayerType.WHITE_PLAYER)) or (not max_turn and not canMove(board1, opponent)):
+        return MinimaxSolver(depth - 1, alpha, beta, board1, move_eval, player)
 
-    board = copyBoard(board1)
-    totalScore = 0
-    if is_max:
-        totalScore = float('-inf')
-        all_moves = getAllPossibleMoves(board, PlayerType.WHITE_PLAYER.value)
-        number_of_moves = getNumberOfMoves(board, PlayerType.WHITE_PLAYER.value)
+    board = copy.deepcopy(board1)
+    total_score = 0
+
+    if max_turn:
+        total_score = -sys.maxsize
+        all_moves = getAllPossibleMoves(board, PlayerType.WHITE_PLAYER)
+        number_of_moves = getNumberOfMoves(board, PlayerType.WHITE_PLAYER)
         for i in range(number_of_moves):
             move = all_moves[i]
             score = MinimaxSolver(depth - 1, alpha, beta, board, move, player)
-            if score > totalScore:
-                totalScore = score
-            alpha = max(alpha, score)
+            total_score = fmax(total_score, score)
+            alpha = fmax(alpha, score)
             if beta <= alpha:
                 break
     else:
-        totalScore = float('inf')
-        all_moves = getAllPossibleMoves(board, PlayerType.BLACK_PLAYER.value)
-        number_of_moves = getNumberOfMoves(board, PlayerType.BLACK_PLAYER.value)
+        total_score = sys.maxsize
+        all_moves = getAllPossibleMoves(board, PlayerType.BLACK_PLAYER)
+        number_of_moves = getNumberOfMoves(board, PlayerType.BLACK_PLAYER)
         for i in range(number_of_moves):
             move = all_moves[i]
             score = MinimaxSolver(depth - 1, alpha, beta, board, move, player)
-            if score < totalScore:
-                totalScore = score
-            beta = min(beta, score)
+            total_score = fmin(total_score, score)
+            beta = fmin(beta, score)
             if beta <= alpha:
                 break
-    # destructBoard(board)
-    return totalScore
+
+    return total_score
 
 def destructBoard(board):
     for i in range(board.size):
@@ -541,21 +525,20 @@ def removeHistoryFoward(board):
     board.historyForward = [Movement()]
     board.noOfMovesFoward = 0
 
-def makeRealMove(board:Board, lastMove):
-    board.lastPiecetypeMoved = lastMove.pieceType
+def makeRealMove(board: Board, lastMove: Movement):
     if (
-        lastMove.x < 0
-        or lastMove.x > board.size - 1
-        or lastMove.y < 0
-        or lastMove.y > board.size - 1
-        or not (lastMove.pieceType == PlayerType.BLACK_PLAYER.value or lastMove.pieceType == PlayerType.WHITE_PLAYER.value)
+        lastMove is not None
+        and 0 <= lastMove.x < board.size
+        and 0 <= lastMove.y < board.size
+        and lastMove.pieceType in {PlayerType.BLACK_PLAYER.value, PlayerType.WHITE_PLAYER.value}
     ):
-        return
-    board.historyBack.append(lastMove)
-    board.noOfMovesBack += 1
-    makeMove(board, lastMove)
+        board.lastPiecetypeMoved = lastMove.pieceType
+        board.historyBack.append(lastMove)
+        board.noOfMovesBack += 1
+        makeMove(board, lastMove)
 
-def makeMove(board, lastMove):
+
+def makeMove(board: Board, lastMove: Movement):
     opponent = PlayerType.BLACK_PLAYER.value if lastMove.pieceType == PlayerType.WHITE_PLAYER.value else PlayerType.WHITE_PLAYER.value
 
     tmp = copyBoard(board)
@@ -613,12 +596,12 @@ def saveGame(board:Board):
 def loadGame(data):
     data_json = json.loads(data)
     size = data_json["board_size"]
-    difficulty = data_json["game_difficulty"]
+    difficulty_list = Difficulty[data_json["game_difficulty"]]
     is_custom = data_json["custom"]
     
     # Crear una instancia de la clase Board sin parámetros
     board = Board()
-    initializeGame(board, size, difficulty, is_custom, Player(True), Player(True))
+    initializeGame(board, size, difficulty_list, is_custom, Player(True), Player(True))
 
     if is_custom:
         initial_board = data_json["initial_board"]
