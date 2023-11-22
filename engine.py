@@ -593,7 +593,7 @@ def saveGame(board:Board):
 
     return json.dumps(data)
 
-def loadGame(data):
+def loadGame(data, board_container):
     data_json = json.loads(data)
     size = data_json["board_size"]
     difficulty_list = Difficulty[data_json["game_difficulty"]]
@@ -620,5 +620,6 @@ def loadGame(data):
         m = Movement(pieceType, x, y)
         makeRealMove(board, m)
     printBoard(board)
-    return board
 
+    board_container[0] = board  # Actualizar la referencia al objeto board
+    return board

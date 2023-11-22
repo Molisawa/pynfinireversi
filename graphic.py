@@ -212,7 +212,7 @@ def ShowFileSaverScreen(board, ScreenFeatures, filename, frame_counter, mouse, s
 
     # return screen_list, last_screen
 
-def LoadFileScreen(board: Board, ScreenFeatures: ScreenFeatures, screen_list, slider: Slider):
+def LoadFileScreen(board_container, ScreenFeatures, screen_list, slider):
     directory = getDirectories()
     clear_background(RAYWHITE)
     bar = (50 * directory.NumberOfDirectories + 10) > (ScreenFeatures.screenHeight - 80)
@@ -249,13 +249,13 @@ def LoadFileScreen(board: Board, ScreenFeatures: ScreenFeatures, screen_list, sl
                         int(measure_text(directory.directories[i], 20) + 20), 30)
         over = check_collision_point_rec(get_mouse_position(), rec)
         if is_mouse_button_pressed(0) and over:
-            board_temp = loadGame(load_file_text(f"saved/{directory.directories[i]}"))
+            board_temp = loadGame(load_file_text(f"saved/{directory.directories[i]}"), board_container)
             if board_temp.initialized != 1:
                 screen_list[0] = ScreenFlag.GAME
                 DestroyDirectory(directory)
                 return
-            board = board_temp
-            ScreenFeatures.squareSize = int(ScreenFeatures.screenHeight / board.size)
+            board_container[0] = board_temp  # Modificación aquí
+            ScreenFeatures.squareSize = int(ScreenFeatures.screenHeight / board_container[0].size)
             screen_list[0] = ScreenFlag.GAME
         draw_rectangle_rec(rec, LIGHTGRAY if over else RAYWHITE)
         draw_text(directory.directories[i], 20, int(rec.y + 5), 20, BLACK)
