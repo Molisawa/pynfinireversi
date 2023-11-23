@@ -1,47 +1,8 @@
 import math
+import os
 from pyray import *
 from engine import *
-import os
-
-from dataclasses import dataclass
-from typing import List
-
-@dataclass
-class Menu:
-    goBackButton: Rectangle
-    goForwardButton: Rectangle
-    saveGameButton: Rectangle
-
-@dataclass
-class MenuOptions:
-    startGameButton: Rectangle
-    loadGameButton: Rectangle
-    editorButton: Rectangle
-
-class ScreenFlag(Enum):
-    MENU = 0
-    GAME = 1
-    SAVE = 2
-    LOAD = 3
-    EDITOR = 4
-    CONFIG_GAME = 5
-
-@dataclass
-class DirectoryEntry:
-    directories: List[str]
-    NumberOfDirectories: int
-
-@dataclass
-class Slider:
-    collision: bool
-    difference: float
-    offset: float
-
-@dataclass
-class ScreenFeatures:
-    screenWidth: int
-    screenHeight: int
-    squareSize: float
+from graphic_classes import *
 
 def CheckButtonPressed(menu: Menu, board, screen_list, mouse):
     if check_collision_point_rec(mouse, menu.goBackButton):
@@ -88,7 +49,6 @@ def CheckPiecePlayed(board: Board, screenFeatures: ScreenFeatures, clicked, mous
                         removeHistoryFoward(board)
                         UpdateDrawingState(board, screenFeatures)
 
-
 def DrawBoardGrid(board: Board, screenFeatures: ScreenFeatures):
     for i in range(board.size + 1):
         draw_line_v((int(screenFeatures.squareSize * i), 0), (int(screenFeatures.squareSize * i), int(board.size * screenFeatures.squareSize)), BLACK)
@@ -98,9 +58,6 @@ def DrawBoardGrid(board: Board, screenFeatures: ScreenFeatures):
 
     draw_rectangle(int(board.size * screenFeatures.squareSize) + 1, 0, int(screenFeatures.screenWidth - 1), int(screenFeatures.screenHeight), WHITE)
     draw_rectangle(int(board.size * screenFeatures.squareSize) + 1, 0, int(screenFeatures.screenWidth - 1), int(screenFeatures.screenHeight), fade(DARKGREEN, 0.5))
-
-
-
 
 def PlayScreen(board:Board, menu:Menu, ScreenFeatures:ScreenFeatures, screen_list, mouse, clicked):
     clear_background(DARKGREEN)
@@ -295,6 +252,7 @@ def UpdateDrawingState(board:Board, screenFeatures: ScreenFeatures):
                 draw_circle(int(i * screenFeatures.squareSize + screenFeatures.squareSize / 2),
                            int(j * screenFeatures.squareSize + screenFeatures.squareSize / 2),
                            int(screenFeatures.squareSize / 2 - 7), DARKGREEN)
+
 def getMenu(board, ScreenFeatures: ScreenFeatures):
     goBackButton = Rectangle(board.size * ScreenFeatures.squareSize + 20, 30,
                                ScreenFeatures.screenWidth - board.size * ScreenFeatures.squareSize - 40, 75)
@@ -304,6 +262,7 @@ def getMenu(board, ScreenFeatures: ScreenFeatures):
     saveGameButton = Rectangle(goForwardButton.x, goForwardButton.height + goForwardButton.y + 10,
                                  ScreenFeatures.screenWidth - board.size * ScreenFeatures.squareSize - 40, 75)
     return Menu(goBackButton, goForwardButton, saveGameButton)
+
 def getMenuOptions(ScreenFeatures: ScreenFeatures):
     bussy_screen = 400 + ScreenFeatures.screenHeight * 0.1
     free_screen = ScreenFeatures.screenHeight - bussy_screen
