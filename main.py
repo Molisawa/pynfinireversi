@@ -1,5 +1,16 @@
-from graphic import *
 from pyray import *
+from screens.config_screen import *
+from screens.editor_screen import *
+from screens.load_file_screen import *
+from screens.menu_screen import *
+from screens.play_screen import *
+from screens.show_file_screen import *
+
+from graphic_utils.destroy_directory import *
+from graphic_utils.get_directories import *
+from graphic_utils.get_menu import *
+from graphic_utils.get_menu_options import *
+from graphic_utils.init_slider import *
 
 # Definición de constantes
 SCREEN_WIDTH = 1000
