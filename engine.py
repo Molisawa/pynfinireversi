@@ -7,8 +7,19 @@ import copy
 from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
-
-
+from engine_utils.can_go_back import *
+from engine_utils.can_go_forward import *
+from engine_utils.clean_helpers import *
+from engine_utils.destruct_board import *
+from engine_utils.get_point_evaluator import *
+from engine_utils.get_score_position import *
+from engine_utils.get_score import *
+from engine_utils.get_winner import *
+from engine_utils.init_board import *
+from engine_utils.is_valid_move import *
+from engine_utils.print_board import *
+from engine_utils.remove_history_forward import *
+from engine_utils.set_custom_board_state import *
 
 
 def initializeGame(board:Board, size, difficulty, custom, player1, player2):
@@ -26,42 +37,6 @@ def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     return
     # Después de initializeBoard(board)
 
-def getPointEvaluator(board, pieceType):
-    return getScorePosition(board, pieceType)
-
-def getScorePosition(board:Board, pieceType):
-    valores = [[0] * board.size for _ in range(board.size)]
-
-    for i in range(board.size):
-        valores[1][i] = -20
-        valores[board.size - 2][i] = -20
-        if i < board.size - 4:
-            valores[0][i + 2] = 7
-            valores[board.size - 1][i + 2] = 7
-        for j in range(board.size):
-            valores[j][1] = -20
-            valores[j][board.size - 2] = -20
-            if j < board.size - 4:
-                valores[j + 2][0] = 7
-                valores[j + 2][board.size - 1] = 7
-            if j < board.size - 4 and i < board.size - 4:
-                valores[j + 2][i + 2] = 4
-
-    for value in range(1, 3):
-        is_negative = -1 if value % 2 else 1
-        tmp = 100 / (value + 1) * is_negative
-        valores[value][value] = tmp
-        valores[board.size - 1 - value][value] = tmp
-        valores[value][board.size - 1 - value] = tmp
-        valores[board.size - 1 - value][board.size - value - 1] = tmp
-
-    score = 0
-    for i in range(board.size):
-        for j in range(board.size):
-            if board.state[i][j].pieceType == pieceType:
-                score += valores[i][j]
-
-    return score
 
 def computerMove(board, player):
     random.seed(time.time())
@@ -74,65 +49,8 @@ def computerMove(board, player):
     elif difficulty == Difficulty.HARD:
         makeRealMove(board, bestMinimaxMove(board, player))
 
-def initializeBoard(board:Board):
-    board.lastPiecetypeMoved = 2
-
-    board.state = [[Piece() for _ in range(board.size)] for _ in range(board.size)]
-    for i in range(board.size):
-        for j in range(board.size):
-            board.state[i][j].pieceType = 0
-
-    board.initialState = [[Piece() for _ in range(board.size)] for _ in range(board.size)]
-    for i in range(board.size):
-        for j in range(board.size):
-            board.initialState[i][j].pieceType = 0
-
-    board.state[board.size // 2 - 1][board.size // 2 - 1].pieceType = 2
-    board.state[board.size // 2][board.size // 2].pieceType = 2
-    board.state[board.size // 2 - 1][board.size // 2].pieceType = 1
-    board.state[board.size // 2][board.size // 2 - 1].pieceType = 1
-
-    board.initialState[board.size // 2 - 1][board.size // 2 - 1].pieceType = 2
-    board.initialState[board.size // 2][board.size // 2].pieceType = 2
-    board.initialState[board.size // 2 - 1][board.size // 2].pieceType = 1
-    board.initialState[board.size // 2][board.size // 2 - 1].pieceType = 1
-
-def printBoard(board):
-    for row in board.state:
-        print([piece.pieceType for piece in row])
-
-
-def setCustomBoardState(board:Board):
-    for k in range(board.size):
-        for l in range(board.size):
-            board.state[k][l].pieceType = board.initialState[k][l].pieceType
-    return board
-
 def isGameOver(board):
     return not canMove(board, 1) and not canMove(board, 0)
-
-def getWinner(board:Board):
-
-    white_moves = 0
-    black_moves = 0
-    for i in range(board.size):
-        for j in range(board.size):
-            if board.state[i][j].pieceType == 2:
-                white_moves += 1
-            if board.state[i][j].pieceType == 1:
-                black_moves += 1
-    if white_moves == black_moves:
-        return "TIE"
-    if white_moves > black_moves:
-        return "LOSER"
-    else:
-        return "WINNER"
-
-def canGoBack(board:Board):
-    return board.noOfMovesBack > 0
-
-def canGoFoward(board:Board):
-    return board.noOfMovesFoward > 0
 
 def SetHelpers(board:Board, player:PlayerType):
     possibleMoves = 0
@@ -149,25 +67,10 @@ def SetHelpers(board:Board, player:PlayerType):
                     board.state[i][j].pieceType = 3
     print("Possible moves: ", possibleMoves)
 
-def getScore(board, piece):
-    score = 0
-    for i in range(board.size):
-        for j in range(board.size):
-            if board.state[i][j].pieceType == piece:
-                score += 1
-    return score
+
 
 def canSkipBlackPiece(board):
     return not isGameOver(board) and not canMove(board, 1) and board.lastPiecetypeMoved == 2 and board.noOfMovesFoward == 0
-
-def cleanHelpers(board:Board):
-    bestScore = 0
-    x = 0
-    y = 0
-    for i in range(board.size):
-        for j in range(board.size):
-            if board.state[i][j].pieceType == 3:
-                board.state[i][j].pieceType = 3
 
 def bestMove(board, player):
     bestScore = 0
@@ -216,6 +119,7 @@ def bestMinimaxMove(board, player):
         if score_temp > score:
             score = score_temp
             best_move = m
+
 def randomMovement(board, player):
     possibleMoves = getNumberOfMoves(board, player)
     moves = getAllPossibleMoves(board, player)
@@ -248,94 +152,8 @@ def getNumberOfMoves(board:Board, pieceType:PlayerType):
     print("Moves: ", moves)
     return moves
 
-def isValidMove(board:Board, lastMove:Movement):
-    opponent = PlayerType.BLACK_PLAYER.value if lastMove.pieceType == PlayerType.WHITE_PLAYER.value else PlayerType.WHITE_PLAYER.value
-    colIndex = lastMove.x - 1
-    rowIndex = lastMove.y
-    offset = 0
 
-    while colIndex > 0 and board.state[colIndex][rowIndex].pieceType == opponent:
-        colIndex -= 1
-        offset += 1
-    if colIndex >= 0 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
 
-    # move down
-    colIndex = lastMove.x + 1
-    rowIndex = lastMove.y
-    offset = 0
-    while colIndex < board.size - 1 and board.state[colIndex][rowIndex].pieceType == opponent:
-        colIndex += 1
-        offset += 1
-    if colIndex <= board.size - 1 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
-
-    # move left
-    colIndex = lastMove.x
-    rowIndex = lastMove.y - 1
-    offset = 0
-    while rowIndex > 0 and board.state[colIndex][rowIndex].pieceType == opponent:
-        rowIndex -= 1
-        offset += 1
-    if rowIndex >= 0 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
-
-    # move right
-    colIndex = lastMove.x
-    rowIndex = lastMove.y + 1
-    offset = 0
-    while rowIndex < board.size - 1 and board.state[colIndex][rowIndex].pieceType == opponent:
-        rowIndex += 1
-        offset += 1
-    if rowIndex <= board.size - 1 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
-
-    # move up left
-    colIndex = lastMove.x - 1
-    rowIndex = lastMove.y - 1
-    offset = 0
-    while colIndex > 0 and rowIndex > 0 and board.state[colIndex][rowIndex].pieceType == opponent:
-        colIndex -= 1
-        rowIndex -= 1
-        offset += 1
-    if colIndex >= 0 and rowIndex >= 0 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
-
-    # move up right
-    colIndex = lastMove.x - 1
-    rowIndex = lastMove.y + 1
-    offset = 0
-    while colIndex > 0 and rowIndex < board.size - 1 and board.state[colIndex][rowIndex].pieceType == opponent:
-        colIndex -= 1
-        rowIndex += 1
-        offset += 1
-    if colIndex >= 0 and rowIndex <= board.size - 1 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
-
-    # move down left
-    colIndex = lastMove.x + 1
-    rowIndex = lastMove.y - 1
-    offset = 0
-    while colIndex < board.size - 1 and rowIndex > 0 and board.state[colIndex][rowIndex].pieceType == opponent:
-        colIndex += 1
-        rowIndex -= 1
-        offset += 1
-    if colIndex <= board.size - 1 and rowIndex >= 0 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
-
-    # move down right
-    colIndex = lastMove.x + 1
-    rowIndex = lastMove.y + 1
-    offset = 0
-    while colIndex < board.size - 1 and rowIndex < board.size - 1 and board.state[colIndex][rowIndex].pieceType == opponent:
-        colIndex += 1
-        rowIndex += 1
-        offset += 1
-    if colIndex <= board.size - 1 and rowIndex <= board.size - 1 and board.state[colIndex][rowIndex].pieceType == lastMove.pieceType and offset > 0:
-        return True
-
-    # when all hopes fade away
-    return False
 def canMove(board, pieceType:PlayerType):
     return getNumberOfMoves(board, pieceType) > 0
 
@@ -415,18 +233,7 @@ def MinimaxSolver(depth, alpha, beta, board1, move_eval, player):
 
     return total_score
 
-def destructBoard(board):
-    for i in range(board.size):
-        board.state[i] = None
 
-    for i in range(board.size):
-        board.initialState[i] = None
-
-    board.state = None
-    board.initialState = None
-    board.historyBack = None
-    board.historyForward = None
-    board = None
 
 def goBack(board):
     if canGoBack(board):
@@ -472,9 +279,7 @@ def goForward(board:Board):
         for move in historyRebuild:
             makeRealMove(board, move)
 
-def removeHistoryFoward(board):
-    board.historyForward = [Movement()]
-    board.noOfMovesFoward = 0
+
 
 def makeRealMove(board: Board, lastMove: Movement):
     if (
@@ -527,22 +332,7 @@ def makeMove(board: Board, lastMove: Movement):
     destructBoard(tmp)
 
 
-def saveGame(board:Board):
-    data = {
-        "board_size": board.size,
-        "game_difficulty": board.difficulty.name,
-        "movements": [
-            {"piece_type": move.pieceType, "x": move.x, "y": move.y} for move in board.historyBack
-        ],
-        "custom": board.custom
-    }
 
-    if board.custom:
-        data["initial_board"] = [
-            {"piece_type": cell.pieceType} for row in board.initialState for cell in row
-        ]
-
-    return json.dumps(data)
 
 def loadGame(data, board_container):
     data_json = json.loads(data)
