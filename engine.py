@@ -158,17 +158,7 @@ def canMove(board, pieceType:PlayerType):
     return getNumberOfMoves(board, pieceType) > 0
 
 def copyBoard(board:Board):
-    tmp = Board()
-    initializeGame(tmp, board.size, board.difficulty, board.custom, board.player1, board.player2)
-
-    if board.custom:
-        for k in range(board.size):
-            for l in range(board.size):
-                tmp.initialState[k][l].pieceType = board.initialState[k][l].pieceType
-        setCustomBoardState(tmp)
-    for k in range(board.size):
-        for l in range(board.size):
-            tmp.state[k][l].pieceType = board.state[k][l].pieceType
+    tmp = copy.deepcopy(board)
     return tmp
 
 def nextTurn(board:Board):
@@ -235,22 +225,22 @@ def MinimaxSolver(depth, alpha, beta, board1, move_eval, player):
 
 
 
-def goBack(board):
+def goBack(board:Board):
     if canGoBack(board):
         m = board.historyBack[:-1]
-        boardTmp = None
+        board_tmp = None
         if board.custom:
-            boardTmp = copyBoard(board)
-        board.historyForward += [board.historyBack[-1]]
+            board_tmp = copyBoard(board)
+        board.historyForward.append(board.historyBack[-1])
         board.noOfMovesFoward += 1
         moves = board.noOfMovesBack
         initializeBoard(board)
-        if boardTmp is not None and boardTmp.custom:
-            for i in range(board.size):
-                for j in range(board.size):
-                    board.initialState[i][j].pieceType = boardTmp.initialState[i][j].pieceType
+        if board_tmp and board_tmp.custom:
+            for i, row in enumerate(board.initialState):
+                for j, cell in enumerate(row):
+                    board.initialState[i][j].pieceType = board_tmp.initialState[i][j].pieceType
             setCustomBoardState(board)
-            destructBoard(boardTmp)
+            destructBoard(board_tmp)
         board.historyBack = board.historyBack[:-1]
         board.noOfMovesBack = 0
         for move in m:
