@@ -148,7 +148,7 @@ def getNumberOfMoves(board:Board, pieceType:PlayerType):
                 m_black = Movement(pieceType, i, j) # Inicializar directamente con valores
                 if isValidMove(board, m_black):
                     moves += 1
-    print("Moves: ", moves)
+    print("Moves: ", moves, "Piece: ", pieceType)
     return moves
 
 
