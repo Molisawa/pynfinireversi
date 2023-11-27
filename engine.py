@@ -21,7 +21,6 @@ from engine_utils.print_board import *
 from engine_utils.remove_history_forward import *
 from engine_utils.set_custom_board_state import *
 
-
 def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     board.initialized = 1
     board.difficulty = difficulty
