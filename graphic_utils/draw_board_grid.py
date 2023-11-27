@@ -2,7 +2,7 @@ from pyray import *
 from engine import *
 from graphic_classes import *
 
-def DrawBoardGrid(board: Board, screenFeatures: ScreenFeatures):
+def DrawBoardGrid(board: Board, screenFeatures: ScreenFeatures) -> None:
     for i in range(board.size + 1):
         draw_line_v((int(screenFeatures.squareSize * i), 0), (int(screenFeatures.squareSize * i), int(board.size * screenFeatures.squareSize)), BLACK)
 

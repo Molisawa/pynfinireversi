@@ -3,7 +3,7 @@ from engine import *
 from graphic_classes import *
 from graphic_utils.update_drawing_state import *
 
-def CheckPiecePlayed(board: Board, screenFeatures: ScreenFeatures, clicked, mouse):
+def CheckPiecePlayed(board: Board, screenFeatures: ScreenFeatures, clicked, mouse) -> None:
     for i in range(board.size):
         for j in range(board.size):
             vector = None

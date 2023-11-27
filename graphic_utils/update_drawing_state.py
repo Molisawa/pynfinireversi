@@ -2,7 +2,7 @@ from pyray import *
 from engine import *
 from graphic_classes import *
 
-def UpdateDrawingState(board:Board, screenFeatures: ScreenFeatures):
+def UpdateDrawingState(board:Board, screenFeatures: ScreenFeatures)->None:
 
     offset = int((screenFeatures.squareSize / 2 - 5) * 0.25)
     for i in range(board.size):

@@ -8,7 +8,7 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def isValidMove(board:Board, lastMove:Movement):
+def isValidMove(board:Board, lastMove:Movement) -> bool:
     opponent = PlayerType.BLACK_PLAYER.value if lastMove.pieceType == PlayerType.WHITE_PLAYER.value else PlayerType.WHITE_PLAYER.value
     colIndex = lastMove.x - 1
     rowIndex = lastMove.y

@@ -3,7 +3,7 @@ from pyray import *
 from engine import *
 from graphic_classes import *
 
-def getDirectories():
+def getDirectories() -> DirectoryEntry:
     path = "saved/"
     dirs = []
     count = 0

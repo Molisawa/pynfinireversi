@@ -8,7 +8,7 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def cleanHelpers(board:Board):
+def cleanHelpers(board:Board) -> None:
     bestScore = 0
     x = 0
     y = 0

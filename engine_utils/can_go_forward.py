@@ -8,5 +8,5 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def canGoFoward(board:Board):
+def canGoFoward(board:Board) -> bool:
     return board.noOfMovesFoward > 0

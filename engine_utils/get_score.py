@@ -8,7 +8,7 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def getScore(board, piece):
+def getScore(board, piece)  -> int:
     score = 0
     for i in range(board.size):
         for j in range(board.size):

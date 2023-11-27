@@ -2,7 +2,7 @@ from pyray import *
 from engine import *
 from graphic_classes import *
 
-def getMenuOptions(ScreenFeatures: ScreenFeatures):
+def getMenuOptions(ScreenFeatures: ScreenFeatures) -> MenuOptions:
     bussy_screen = 400 + ScreenFeatures.screenHeight * 0.1
     free_screen = ScreenFeatures.screenHeight - bussy_screen
     number = (ScreenFeatures.screenWidth - (3 * 250)) / 4

@@ -8,7 +8,7 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def initializeBoard(board:Board):
+def initializeBoard(board:Board) -> None:
     board.lastPiecetypeMoved = 2
 
     board.state = [[Piece() for _ in range(board.size)] for _ in range(board.size)]

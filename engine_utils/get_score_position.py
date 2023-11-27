@@ -8,8 +8,23 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def getScorePosition(board:Board, pieceType):
+def getScorePosition(board:Board, pieceType) -> int:
     valores = [[0] * board.size for _ in range(board.size)]
+
+    valores = valuesModifier(board, valores)
+
+    score = 0
+    
+    for i in range(board.size):
+        for j in range(board.size):
+            if board.state[i][j].pieceType == pieceType:
+                score += valores[i][j]
+
+    return score
+
+def valuesModifier(board: Board, valor: list) -> list:
+
+    valores = valor
 
     for i in range(board.size):
         valores[1][i] = -20
@@ -25,7 +40,13 @@ def getScorePosition(board:Board, pieceType):
                 valores[j + 2][board.size - 1] = 7
             if j < board.size - 4 and i < board.size - 4:
                 valores[j + 2][i + 2] = 4
+    
+    valores = valuesReview(board, valores)
+    
+    return valores
 
+def valuesReview(board: Board, valor: list) -> list:
+    valores = valor
     for value in range(1, 3):
         is_negative = -1 if value % 2 else 1
         tmp = 100 / (value + 1) * is_negative
@@ -33,11 +54,6 @@ def getScorePosition(board:Board, pieceType):
         valores[board.size - 1 - value][value] = tmp
         valores[value][board.size - 1 - value] = tmp
         valores[board.size - 1 - value][board.size - value - 1] = tmp
-
-    score = 0
-    for i in range(board.size):
-        for j in range(board.size):
-            if board.state[i][j].pieceType == pieceType:
-                score += valores[i][j]
-
-    return score
+    
+    return valores
+    

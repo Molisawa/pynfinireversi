@@ -8,7 +8,7 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def destructBoard(board):
+def destructBoard(board) -> None:
     for i in range(board.size):
         board.state[i] = None
 

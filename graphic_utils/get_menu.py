@@ -2,7 +2,7 @@ from pyray import *
 from engine import *
 from graphic_classes import *
 
-def getMenu(board, ScreenFeatures: ScreenFeatures):
+def getMenu(board, ScreenFeatures: ScreenFeatures) -> Menu:
     goBackButton = Rectangle(board.size * ScreenFeatures.squareSize + 20, 30,
                                ScreenFeatures.screenWidth - board.size * ScreenFeatures.squareSize - 40, 75)
 

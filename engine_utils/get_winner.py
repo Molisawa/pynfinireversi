@@ -8,7 +8,7 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def getWinner(board:Board):
+def getWinner(board:Board) -> str:
 
     white_moves = 0
     black_moves = 0

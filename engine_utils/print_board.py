@@ -8,6 +8,6 @@ from builtins import max as fmax
 from builtins import min as fmin
 from engine_classes import *
 
-def printBoard(board):
+def printBoard(board) -> None:
     for row in board.state:
         print([piece.pieceType for piece in row])
