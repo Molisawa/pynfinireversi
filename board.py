@@ -36,8 +36,8 @@ class Board():
         '''
         self.lastPiecetypeMoved = 2
 
-        self.set_states()
-        self.initialize_values()
+        self.__set_states()
+        self.__initialize_values()
 
     def printBoard(self) -> None:
         '''
@@ -81,6 +81,50 @@ class Board():
         for i in range(self.size):
             for j in range(self.size):
                 self.initialState[i][j].pieceType = 0
+
+    def goBack(self):
+        if canGoBack(self):
+            m = self.historyBack[:-1]
+            board_tmp = None
+            if self.custom:
+                board_tmp = copyBoard(self)
+            self.historyForward.append(self.historyBack[-1])
+            self.noOfMovesFoward += 1
+            moves = self.noOfMovesBack
+            self.initializeBoard(self)
+            if board_tmp and board_tmp.custom:
+                for i, row in enumerate(self.initialState):
+                    for j, cell in enumerate(row):
+                        self.initialState[i][j].pieceType = board_tmp.initialState[i][j].pieceType
+                self.setCustomBoardState()
+                board_tmp.destructBoard()
+            self.historyBack = self.historyBack[:-1]
+            self.noOfMovesBack = 0
+            for move in m:
+                self.makeRealMove(move)
+
+    def goForward(self):
+        if canGoFoward(self):
+            m = self.historyForward[:-1]
+            self.historyBack += [self.historyForward[-1]]
+            self.noOfMovesFoward -= 1
+            movesForward = self.noOfMovesFoward
+            moves = self.noOfMovesBack + 1
+            historyRebuild = self.historyBack
+            boardTmp = None
+            if self.custom:
+                boardTmp = copyBoard(self)
+            self.initializeBoard()
+            if boardTmp is not None and boardTmp.custom:
+                for i in range(self.size):
+                    for j in range(self.size):
+                        self.initialState[i][j].pieceType = boardTmp.initialState[i][j].pieceType
+                self.setCustomBoardState()
+                self.destructBoard(boardTmp)
+            self.historyForward = m
+            self.noOfMovesBack = 0
+            for move in historyRebuild:
+                self.makeRealMove(move)
 
     def __initialize_values(self):
         '''

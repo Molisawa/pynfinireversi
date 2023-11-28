@@ -28,7 +28,3 @@ class Movement:
         self.pieceType = pieceType
         self.x = x if x is not None else 0
         self.y = y if y is not None else 0
-
-class Player:
-    def __init__(self, isHuman):
-        self.isHuman = isHuman

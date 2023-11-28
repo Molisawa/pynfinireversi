@@ -11,15 +11,13 @@ from engine_classes import *
 from engine_utils.can_go_back import *
 from engine_utils.can_go_forward import *
 from engine_utils.clean_helpers import *
-from engine_utils.destruct_board import *
 from engine_utils.get_point_evaluator import *
 from engine_utils.get_score_position import *
 from engine_utils.get_score import *
 from engine_utils.get_winner import *
 from engine_utils.is_valid_move import *
-from engine_utils.print_board import *
 from engine_utils.remove_history_forward import *
-from engine_utils.set_custom_board_state import *
+
 
 def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     board.initialized = 1
@@ -35,18 +33,6 @@ def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     board.initializeBoard(board)
     return
     # Después de initializeBoard(board)
-
-
-def computerMove(board, player):
-    random.seed(time.time())
-    cleanHelpers(board)
-    difficulty = board.difficulty
-    if difficulty == Difficulty.EASY:
-        makeRealMove(board, randomMovement(board, player))
-    elif difficulty == Difficulty.INTERMEDIATE:
-        makeRealMove(board, bestMove(board, player))
-    elif difficulty == Difficulty.HARD:
-        makeRealMove(board, bestMinimaxMove(board, player))
 
 def isGameOver(board):
     return not canMove(board, 1) and not canMove(board, 0)
@@ -71,34 +57,6 @@ def SetHelpers(board:Board, player:PlayerType):
 def canSkipBlackPiece(board):
     return not isGameOver(board) and not canMove(board, 1) and board.lastPiecetypeMoved == 2 and board.noOfMovesFoward == 0
 
-def bestMove(board, player):
-    bestScore = 0
-    x = 0
-    y = 0
-
-    allMoves = getAllPossibleMoves(board, player)
-    for i in range(getNumberOfMoves(board, player)):
-        tmp = copyBoard(board)
-
-        m = Movement()
-        m.pieceType = player
-        m.x = allMoves[i].x
-        m.y = allMoves[i].y
-
-        makeMove(tmp, m)
-        if getScore(tmp, player) - getScore(board, player) > bestScore:
-            bestScore = getScore(tmp, player) - getScore(board, player)
-            x = m.x
-            y = m.y
-
-        destructBoard(tmp)
-    m = Movement()
-    m.pieceType = player
-    m.x = x
-    m.y = y
-
-    return m
-
 def bestMinimaxMove(board, player):
     global nodes
     nodes = 0
@@ -118,27 +76,6 @@ def bestMinimaxMove(board, player):
         if score_temp > score:
             score = score_temp
             best_move = m
-
-def randomMovement(board, player):
-    possibleMoves = getNumberOfMoves(board, player)
-    moves = getAllPossibleMoves(board, player)
-    move = Movement()
-    if possibleMoves > 0:
-        move = moves[random.randint(0, possibleMoves - 1)]
-    # moves = realloc(moves, 0) - No es necesario en Python
-    return move
-
-def getAllPossibleMoves(board, pieceType):
-    possibleMoves = 0
-    moves = [Movement()]
-    for i in range(board.size):
-        for j in range(board.size):
-            if board.state[i][j].pieceType == 0 or board.state[i][j].pieceType == 3:
-                m = Movement(pieceType, i, j)
-                if isValidMove(board, m):
-                    moves.append(m)
-                    possibleMoves += 1
-    return moves
 
 def getNumberOfMoves(board:Board, pieceType:PlayerType):
     moves = 0
@@ -221,106 +158,6 @@ def MinimaxSolver(depth, alpha, beta, board1, move_eval, player):
                 break
 
     return total_score
-
-
-
-def goBack(board:Board):
-    if canGoBack(board):
-        m = board.historyBack[:-1]
-        board_tmp = None
-        if board.custom:
-            board_tmp = copyBoard(board)
-        board.historyForward.append(board.historyBack[-1])
-        board.noOfMovesFoward += 1
-        moves = board.noOfMovesBack
-        initializeBoard(board)
-        if board_tmp and board_tmp.custom:
-            for i, row in enumerate(board.initialState):
-                for j, cell in enumerate(row):
-                    board.initialState[i][j].pieceType = board_tmp.initialState[i][j].pieceType
-            setCustomBoardState(board)
-            destructBoard(board_tmp)
-        board.historyBack = board.historyBack[:-1]
-        board.noOfMovesBack = 0
-        for move in m:
-            makeRealMove(board, move)
-
-def goForward(board:Board):
-    if canGoFoward(board):
-        m = board.historyForward[:-1]
-        board.historyBack += [board.historyForward[-1]]
-        board.noOfMovesFoward -= 1
-        movesForward = board.noOfMovesFoward
-        moves = board.noOfMovesBack + 1
-        historyRebuild = board.historyBack
-        boardTmp = None
-        if board.custom:
-            boardTmp = copyBoard(board)
-        initializeBoard(board)
-        if boardTmp is not None and boardTmp.custom:
-            for i in range(board.size):
-                for j in range(board.size):
-                    board.initialState[i][j].pieceType = boardTmp.initialState[i][j].pieceType
-            setCustomBoardState(board)
-            destructBoard(boardTmp)
-        board.historyForward = m
-        board.noOfMovesBack = 0
-        for move in historyRebuild:
-            makeRealMove(board, move)
-
-
-
-def makeRealMove(board: Board, lastMove: Movement):
-    if (
-        lastMove is not None
-        and 0 <= lastMove.x < board.size
-        and 0 <= lastMove.y < board.size
-        and lastMove.pieceType in {PlayerType.BLACK_PLAYER.value, PlayerType.WHITE_PLAYER.value}
-    ):
-        board.lastPiecetypeMoved = lastMove.pieceType
-        board.historyBack.append(lastMove)
-        board.noOfMovesBack += 1
-        makeMove(board, lastMove)
-
-
-def makeMove(board: Board, lastMove: Movement):
-    opponent = PlayerType.BLACK_PLAYER.value if lastMove.pieceType == PlayerType.WHITE_PLAYER.value else PlayerType.WHITE_PLAYER.value
-
-    tmp = copyBoard(board)
-
-    tmp.state[lastMove.x][lastMove.y].pieceType = lastMove.pieceType
-
-    # Función para realizar un movimiento en una dirección
-    def make_move_direction(board, lastMove, row_dir, col_dir):
-        moves = []
-        x = lastMove.x + row_dir
-        y = lastMove.y + col_dir
-
-        while x >= 0 and x < board.size and y >= 0 and y < board.size and board.state[x][y].pieceType == opponent:
-            moves.append(Movement(lastMove.pieceType, x, y))
-            x += row_dir
-            y += col_dir
-
-        if x >= 0 and x < board.size and y >= 0 and y < board.size and board.state[x][y].pieceType == lastMove.pieceType and len(moves) > 0:
-            for move in moves:
-                tmp.state[move.x][move.y].pieceType = lastMove.pieceType
-
-    make_move_direction(tmp, lastMove, -1, 0)  # move up
-    make_move_direction(tmp, lastMove, 1, 0)   # move down
-    make_move_direction(tmp, lastMove, 0, -1)  # move left
-    make_move_direction(tmp, lastMove, 0, 1)   # move right
-    make_move_direction(tmp, lastMove, -1, -1)  # move up left
-    make_move_direction(tmp, lastMove, -1, 1)   # move up right
-    make_move_direction(tmp, lastMove, 1, -1)   # move down left
-    make_move_direction(tmp, lastMove, 1, 1)    # move down right
-
-    for k in range(board.size):
-        for l in range(board.size):
-            board.state[k][l].pieceType = tmp.state[k][l].pieceType
-
-    destructBoard(tmp)
-
-
 
 
 def loadGame(data, board_container):
