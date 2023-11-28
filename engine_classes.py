@@ -23,10 +23,6 @@ class Difficulty(Enum):
     INTERMEDIATE = 1
     HARD = 2
 
-class Piece:
-    def __init__(self, pieceType=None):
-        self.pieceType = pieceType
-
 class Movement:
     def __init__(self, pieceType=None, x=None, y=None):
         self.pieceType = pieceType
@@ -36,19 +32,3 @@ class Movement:
 class Player:
     def __init__(self, isHuman):
         self.isHuman = isHuman
-
-class Board:
-    def __init__(self):
-        self.size = 6
-        self.state = [[Piece() for _ in range(self.size)] for _ in range(self.size)]  # Inicializar con objetos Piece()
-        self.difficulty = None
-        self.historyBack = []
-        self.historyForward = None
-        self.noOfMovesBack = 0
-        self.lastPiecetypeMoved = None
-        self.noOfMovesFoward = 0
-        self.initialized = None
-        self.custom = False
-        self.initialState = [[Piece() for _ in range(self.size)] for _ in range(self.size)]  # Inicializar con objetos Piece()
-        self.player1 = None
-        self.player2 = None

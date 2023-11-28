@@ -4,6 +4,7 @@ from engine import *
 from graphic_classes import *
 from graphic_utils.update_drawing_state import *
 from graphic_utils.draw_board_grid import *
+from piece import Piece
 
 def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, screen_list):
     clear_background(DARKGREEN)
@@ -63,5 +64,5 @@ def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, scr
         screen_list[0] = ScreenFlag.SAVE
 
     if clicked and check_collision_point_rec(mouse, exit_rect):
-        destructBoard(board)
+        board = None
         screen_list[0] = ScreenFlag.MENU

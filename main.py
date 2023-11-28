@@ -1,4 +1,5 @@
 from pyray import *
+from board import Board
 from screens.config_screen import *
 from screens.editor_screen import *
 from screens.load_file_screen import *

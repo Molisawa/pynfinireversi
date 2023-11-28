@@ -6,6 +6,7 @@ import json
 import copy
 from builtins import max as fmax
 from builtins import min as fmin
+from board import Board
 from engine_classes import *
 from engine_utils.can_go_back import *
 from engine_utils.can_go_forward import *
@@ -15,7 +16,6 @@ from engine_utils.get_point_evaluator import *
 from engine_utils.get_score_position import *
 from engine_utils.get_score import *
 from engine_utils.get_winner import *
-from engine_utils.init_board import *
 from engine_utils.is_valid_move import *
 from engine_utils.print_board import *
 from engine_utils.remove_history_forward import *
@@ -32,7 +32,7 @@ def initializeGame(board:Board, size, difficulty, custom, player1, player2):
     board.custom = custom
     board.player1 = player1
     board.player2 = player2
-    initializeBoard(board)
+    board.initializeBoard(board)
     return
     # Después de initializeBoard(board)
 
