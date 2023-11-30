@@ -1,102 +1,114 @@
+from __future__ import annotations
+import sys
+
+from piece import Piece
+sys.path.append('./screens')
 from pyray import *
-from screens.config_screen import *
-from screens.editor_screen import *
-from screens.load_file_screen import *
-from screens.menu_screen import *
-from screens.play_screen import *
-from screens.show_file_screen import *
+from Menu import Menu
+from board import Board
+from screens.screen import Screen
+import specs as screen_specs
 
-from graphic_utils.destroy_directory import *
-from graphic_utils.get_directories import *
-from graphic_utils.get_menu import *
-from graphic_utils.get_menu_options import *
-from graphic_utils.init_slider import *
+class Game():
+    '''
+    This is the main class for the Game itself.
+    All the basic setup happens here.
+    '''
+    def __init__(self) -> None:
+        '''
+        Constructor for the game. The game itself contains a board, players and a series of other components
+        '''
+        # Music definition and play
+        self.music = None
+        self.board = Board()
+        self.frame_counter = 0
+        self.mouse = None
+        self.clicked = False
+        self.key = 0
+        self.num_of_chars = 0
+        self.filename = ""
+        self.key_pressed_reference = 8
+        self.screen_mediator = None
+        self.menu_options = None
+        self.slider = screen_specs.Slider(False, 0.0, 0.0)
+        self.selected_piece = Piece(screen_specs.PlayerType.BLACK_PLAYER.value)
 
-# Definición de constantes
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 800
 
-# Función principal
-def main():
-    # Inicialización de la música y el tablero
-    init_audio_device()
-    music = load_music_stream("resources/background.mp3")
-    play_music_stream(music)
 
-    board_container = [Board()]  # Lista que contendrá el objeto board
-
-    screen = init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Reversi")
-    set_target_fps(60)
-
-    screen_list = [ScreenFlag.MENU]
-    next_screen_list = [ScreenFlag.MENU]
-    last_screen_list = [ScreenFlag.MENU]
-
-    filename = ""
-    num_of_chars = 0
-    frame_counter = 0
-    difficulty_list = [Difficulty.EASY]
-    custom_board_size = [0]
-
-    piece_selected = Piece(StateFlags.BLACK_PIECE.value)
+    def __start_music(self)->None:
+        '''
+        Method to start the music track
+        '''
+        init_audio_device()
+        self.music = load_music_stream("resources/background.mp3")
+        play_music_stream(self.music)
     
-    slider = Slider(False, 0.0, 0.0)
-    initSlider(slider)
-
-    SQUARE_SIZE = SCREEN_HEIGHT / board_container[0].size
-
-    screen_features = ScreenFeatures(SCREEN_WIDTH, SCREEN_HEIGHT, SQUARE_SIZE)
-
-    menu = getMenu(board_container[0], screen_features)
-    menu_options = getMenuOptions(screen_features)
-
-    while not window_should_close():  
-        frame_counter = (frame_counter + 1) % 60
-        mouse = get_mouse_position()
-        clicked = 0
-        key = 0
+    def __start_mouse_and_frame_counter(self)->None:
+        '''
+        This method is in charge of feeding a frame counter value and obtaining the mouse position
+        '''
+        # Frame counter
+        self.frame_counter = (self.frame_counter + 1) % 60
+        
+        # Mouse data
+        self.mouse = get_mouse_position()
 
         if is_mouse_button_pressed(0):
-            clicked = 1
+            self.clicked = True
 
-        if is_key_pressed(8):
-            num_of_chars -= 1
-            if num_of_chars < 0:
-                num_of_chars = 0
-            filename = filename[:-1]
+    def __start_keys_review(self)->None:
+        '''
+        Check for cerain keys to change the filename, get any key that is presed and ensure they are in range
+        '''
+        # Check for key "8" 
+        if is_key_pressed(self.key_pressed_reference):
+                self.num_of_chars -= 1
+                if self.num_of_chars < 0:
+                    self.num_of_chars = 0
+                self.filename = self.filename[:-1]
 
-        key = get_key_pressed()
+        # Get any pressed key
+        self.key = get_key_pressed()
 
-        if key > 0 and 32 <= key <= 125 and num_of_chars < 10:
+        # Ensure the range to change the filename
+        if self.key > 0 and 32 <= self.key <= 125 and num_of_chars < 10:
             num_of_chars += 1
-            filename += chr(key)
+            filename += chr(self.key)
 
-        begin_drawing()
+    def __start_screen(self)->None:
+        '''
+        This method is in charge of starting the screen
+        '''
+        self.__init_slider()
+        self.window = init_window(screen_specs.SCREEN_WIDTH, screen_specs.SCREEN_HEIGHT, "Reversi")
+        set_target_fps(60)
+        self.menu_options = Menu(self.board)
+        self.screen_mediator = Screen(self.board, self.frame_counter, self.menu_options, True, self.slider, self.selected_piece)
 
-        if screen_list[0] == ScreenFlag.MENU:
-            update_music_stream(music)
-            MenuScreen(screen_features, frame_counter, menu_options, screen_list, board_container[0], next_screen_list)
-        elif screen_list[0] == ScreenFlag.GAME:
-            last_screen_list[0] = ScreenFlag.GAME
-            PlayScreen(board_container[0], menu, screen_features, screen_list, mouse, clicked)
-            draw_fps(10, 10)
-        elif screen_list[0] == ScreenFlag.SAVE:
-            last_screen_list[0] = ScreenFlag.MENU
-            screen_list[0] = ScreenFlag.SAVE
-            ShowFileSaverScreen(board_container[0], screen_features, filename, frame_counter, mouse, screen_list, num_of_chars, last_screen_list[0])
-        elif screen_list[0] == ScreenFlag.LOAD:
-            LoadFileScreen(board_container, screen_features, screen_list, slider)
-        elif screen_list[0] == ScreenFlag.EDITOR:
-            last_screen_list[0] = ScreenFlag.EDITOR
-            EditorScreen(screen_features, board_container[0], piece_selected, screen_list)
-        elif screen_list[0] == ScreenFlag.CONFIG_GAME:
-            [custom_board_size[0]] = ConfigGameScreen(screen_features, board_container[0], screen_list, [custom_board_size[0]], difficulty_list, next_screen_list)
+    def __init_slider(self)->None:
+        self.slider.collision = False
+        self.slider.offset = 0.0
+        self.slider.difference = 0.0
+
+    def game_loop(self)->None:
+        '''The whole gameloop is defined here'''
+        self.__start_music()
+        self.__start_screen()
         
-        end_drawing()
-
-    unload_music_stream(music)
-    close_audio_device()
-    close_window()
+        while not window_should_close():
+            self.__start_mouse_and_frame_counter()
+            self.__start_keys_review()
+            
+            begin_drawing()
+            
+            self.screen_mediator.notify()
+            
+            end_drawing()
+        
+        unload_music_stream(self.music)
+        close_audio_device()
+        close_window()
 
 if __name__ == "__main__":
-    main()
+    game = Game()
+    game.game_loop()
