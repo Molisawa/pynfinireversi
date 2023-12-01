@@ -19,8 +19,6 @@ class GameScreenComponent():
     def __draw(self)->None:
         '''This method draws the screen'''	
         self.__draw_background()
-        self.__draw_white_rectangles()
-        self.__draw_text()
         self.__handle_click()
         self.__draw_scores_text()
         self.check_piece_played()
@@ -45,21 +43,7 @@ class GameScreenComponent():
         # Points and pieces selection
         draw_rectangle(int(self.board.size * self.screen.square_size) + 1, 0, int(self.screen.screen_width - 1), int(self.screen.screen_height), WHITE) # Right rectangles
         draw_rectangle(int(self.board.size * self.screen.square_size) + 1, 0, int(self.screen.screen_width - 1), int(self.screen.screen_height), fade(DARKGREEN, 0.5)) 
-    
-    def __draw_white_rectangles(self)->None:
-        '''This method draws the white rectangles'''	
-        draw_rectangle(int(self.menu.go_back_button.x), int(self.menu.go_back_button.y), int(self.menu.go_back_button.width), int(self.menu.go_back_button.height), WHITE) # Go back base rectangle
-        draw_rectangle(int(self.menu.go_forward_button.x), int(self.menu.go_forward_button.y), int(self.menu.go_forward_button.width), int(self.menu.go_forward_button.height), WHITE) # Go forward base rectangle
-        draw_rectangle(int(self.menu.save_game_button.x), int(self.menu.save_game_button.y), int(self.menu.save_game_button.width), int(self.menu.save_game_button.height), WHITE) # Save game base rectangle
-    
-    def __draw_text(self)->None:
-        '''This method draws the text'''
-        draw_text("Go back", int(self.menu.go_back_button.x - measure_text("Go back", 30) / 2 + self.menu.go_back_button.width / 2),
-              int(self.menu.go_back_button.y + self.menu.go_back_button.height / 2 - 15), 30, BLACK if self.board.can_go_back() else GRAY) # Go back text
-        draw_text("Go foward", int(self.menu.go_forward_button.x - measure_text("Go foward", 30) / 2 + self.menu.go_forward_button.width / 2),
-                int(self.menu.go_forward_button.y + self.menu.go_forward_button.height / 2 - 15), 30, BLACK if self.board.can_go_forward() else GRAY) # Go forward text
-        draw_text("Save game", int(self.menu.save_game_button.x - measure_text("Save game", 30) / 2 + self.menu.save_game_button.width / 2),
-                int(self.menu.save_game_button.y + self.menu.save_game_button.height / 2 - 15), 30, BLACK) # Save game text
+
         
     def __handle_click(self)->None:
         '''This method handles the click'''

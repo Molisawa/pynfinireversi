@@ -96,7 +96,7 @@ class FileLoadScreenComponent():
                     self.destroy_directory()
                     return
                 self.board = board_temp  # Modificación aquí
-                self.screen.squareSize = int(self.screen.screen_flag / self.board.size)
+                self.screen.square_size = int(self.screen.screen_height / board_temp.size)
                 self.screen.screen_to_show = screen_specs.GAME_SCREEN
             draw_rectangle_rec(rec, LIGHTGRAY if over else RAYWHITE)
             draw_text(self.directory.directories[i], 20, int(rec.y + 5), 20, BLACK)
@@ -107,7 +107,7 @@ class FileLoadScreenComponent():
         over = check_collision_point_rec(get_mouse_position(), self.cancel_rect)
         draw_rectangle_rec(self.cancel_rect, LIGHTGRAY if over else GRAY)
         if over and is_mouse_button_pressed(0):
-            self.screen.screen_to_show = screen_specs.MAIN_MENU_SCREEN
+            self.screen.screen_to_show = screen_specs.MAIN_SCREEN
         draw_text("CANCEL", int(self.screen.screen_width / 2 - measure_text("CANCEL", 30) / 2 + int(self.cancel_rect.x / 2)), int(self.cancel_rect.y + 10), 30, WHITE)
     
     def load_game(self, data,)->Board:
@@ -121,13 +121,12 @@ class FileLoadScreenComponent():
         board = Board()
         self.__initialize_game(True, Player(True), Player(True))
 
-        if self.is_custom:
+        if self.board.custom:
             initial_board = data_json["initial_board"]
             matrix_6x6 = [initial_board[i*self.size:(i+1)*self.size] for i in range(self.size)]
-            for i in range(self.size):
-                for j in range(self.size):
-                    board.initialState[i][j].pieceType = matrix_6x6[i][j]["piece_type"]
-                    print(board.initialState[i][j].pieceType)
+            for i in range(self.board.size):
+                for j in range(self.board.size):
+                    self.board.initialState[i][j].pieceType = matrix_6x6[i][j]["piece_type"]
             custom_b = self.board.set_custom_board_state()
 
         for move in data_json["movements"]:
@@ -137,7 +136,7 @@ class FileLoadScreenComponent():
             m = Movement(pieceType, x, y)
             self.board.makeRealMove(m)
 
-        return board
+        return self.board
 
     def __initialize_game(self, custom: bool, player1: Player, player2: Player)->None:
         '''This method initializes the game'''
