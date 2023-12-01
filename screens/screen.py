@@ -46,12 +46,13 @@ class Screen(ScreenMediatorInterface):
         self.creating_new_board = False
         self.__initalize_components()
         
-    def notify(self, mouse: tuple, clicked: bool, filename: str, num_of_chars: int)->None:
+    def notify(self, mouse: tuple, clicked: bool, filename: str, num_of_chars: int, frame_count: float)->None:
         ''' This method notifies the screen to draw'''
         self.mouse = mouse
         self.clicked = clicked
         self.filename = filename
         self.num_of_chars = num_of_chars
+        self.frame_count = frame_count
         if self.screen_to_show == screen_specs.MAIN_SCREEN:
             self.__componentMainScreen.display_screen()
         elif self.screen_to_show == screen_specs.GAME_SCREEN:

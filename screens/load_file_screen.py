@@ -134,7 +134,7 @@ class FileLoadScreenComponent():
             x = move["x"]
             y = move["y"]
             m = Movement(pieceType, x, y)
-            self.board.makeRealMove(m)
+            self.board.make_real_move(m)
 
         return self.board
 

@@ -1,3 +1,4 @@
+import math
 from pyray import *
 from screen import Screen
 import specs as screen_specs
@@ -21,6 +22,7 @@ class MainScreenComponent():
     def __draw(self):
         '''This method draws the screen'''	
         self.__draw_background()
+        self.__draw_animation()
         self.__draw_buttons_shell()
         self.__draw_buttons_text()
         self.__draw_version_and_credits()
@@ -42,6 +44,15 @@ class MainScreenComponent():
         draw_rectangle_rec(self.screen.menu_options.start_game_button, LIGHTGRAY)
         draw_rectangle_rec(self.screen.menu_options.load_game_button, LIGHTGRAY)
         draw_rectangle_rec(self.screen.menu_options.editor_button, LIGHTGRAY)  
+
+    def __draw_animation(self)->None:
+        '''This method draws the animation'''
+        frame = math.floor(self.screen.frame_count * 0.383)
+        put_zero = frame < 10
+        image_path = "resources/frames/frame_{}{}_delay-0.03s.gif".format("0" if put_zero else "", frame)
+        image = load_image(image_path.encode('utf-8'))
+        texture = load_texture_from_image(image)
+        draw_texture(texture, int(self.screen.screen_width / 2 - image.width / 2), int(self.screen.screen_width * 0.1), WHITE)
 
     def __draw_buttons_text(self)->None:
         ''''This method draws the buttons text'''	

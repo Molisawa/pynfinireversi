@@ -107,13 +107,13 @@ class Game():
         
         while not window_should_close():
             draw_fps(10, 10)
-            # update_music_stream(self.music)
+            update_music_stream(self.music)
             self.__start_mouse_and_frame_counter()
             self.__start_keys_review()
             
             begin_drawing()
             
-            self.screen_mediator.notify(self.mouse, self.clicked, self.filename, self.num_of_chars)
+            self.screen_mediator.notify(self.mouse, self.clicked, self.filename, self.num_of_chars, self.frame_counter)
             
             end_drawing()
         

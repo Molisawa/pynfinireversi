@@ -19,6 +19,7 @@ class GameScreenComponent():
     def __draw(self)->None:
         '''This method draws the screen'''	
         self.__draw_background()
+        self.__draw_save_button()
         self.__handle_click()
         self.__draw_scores_text()
         self.check_piece_played()
@@ -29,6 +30,12 @@ class GameScreenComponent():
         '''This method draws the background'''
         clear_background(DARKGREEN)
         self.__draw_board_grid()
+
+    def __draw_save_button(self)->None:
+        '''This method draws the save button'''
+        draw_rectangle(int(self.menu.save_game_button.x), int(self.menu.save_game_button.y), int(self.menu.save_game_button.width), int(self.menu.save_game_button.height), WHITE)
+        draw_text("Save game", int(self.menu.save_game_button.x - measure_text("Save game", 30) / 2 + self.menu.save_game_button.width / 2),
+              int(self.menu.save_game_button.y + self.menu.save_game_button.height / 2 - 15), 30, BLACK)
     
     def __draw_board_grid(self)->None:
         '''This method draws the board grid'''
@@ -59,12 +66,7 @@ class GameScreenComponent():
 
     def __check_button_pressed(self)->None:
         '''This method checks if a button was pressed'''	
-        if check_collision_point_rec(self.screen.mouse, self.menu.go_back_button):
-            self.board.go_back() 
-            self.board.go_back()
-        elif check_collision_point_rec(self.screen.mouse, self.menu.go_forward_button):
-            self.board.go_forward()
-        elif check_collision_point_rec(self.screen.mouse, self.menu.save_game_button) and self.screen.clicked:
+        if check_collision_point_rec(self.screen.mouse, self.menu.save_game_button) and self.screen.clicked:
             self.screen.screen_to_show = screen_specs.SAVE_SCREEN
 
     def __update_drawing_state(self)->None:
