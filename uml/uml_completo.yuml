@@ -1,0 +1,98 @@
+// {type:class}
+// {direction:topDown}
+// {generate:true}
+
+[Filename|_filename;text:str;num_of_chars:int|__init__();get_instance()]
+
+[Piece| pieceType| __init__(pieceType)]
+
+[Menu|+save_game_button;+start_game_button;+load_game_button;  +editor_button;  +board:Board;...|__init__(board:Board)]
+
+[Screen|+__init__(...);+notify(...);+__initalize_components()]
+
+[ScreenMediatorInterface|notify(self, event)]
+
+[MainScreenComponent|-screen:Screen|+__init__(screen:Screen);+display_screen():void; - __draw(): void; - __check_menu_button_pressed(): void;...]
+
+[LoadScreenComponent|-screen:Screen;-board:Board; - menu: Menu; - slider: screen_specs.Slider; - directory: None|+__init__(...);+display_screen(): void; - __draw(): None;...]
+
+[FileLoadScreenComponent|+board:Board;+slider:screen_specs.Slider;+screen: Screen;+directory: None|+__init__(...);+display_screen(): None; -__draw(): None;+load_game(data): Board; -__initialize_game(...): None;...]
+
+[GameScreenComponent|+screen:Screen;+board: Board; +menu: Menu|+__init__(...);-__draw(): None;-check_piece_played(): None; -__check_game_over(): None; -__draw_exit_button(): None;...]
+
+[FileSaverScreenComponent|+screen:Screen;+board: Board; +menu: Menu; +filename: Filename; +frame_counter: int; +num_of_chars: int|+__init__(...);+display_screen(): None; -__draw(): None;-__create_action_rects(): None;-__do_final_checks(): None;...]
+
+
+[EditorScreenComponent|+screen:Screen;+board: Board; +piece: Piece; +is_black: bool|+__init__(...);+display_screen():None; -__draw():None;-__check_final_user_inputs(): None;...]
+
+[ConfigScreenComponent|+screen:Screen;+board:Board; +custom_board_size: int; +difficulty: screen_specs.Difficulty; +clicked: bool; +mouse: Vector2|+__init__(...); +display_screen(): None; -__draw(): int;-__initialize_game(...): None;...]
+
+[Game|+board;+filename;+difficulty;+screen_mediator;+menu_options; +slider; +selected_piece;...|+__init__();+__start_screen(); +__init_slider(); +game_loop();...]
+
+[Board|-size:int;-state:...;-initialState:...;   - custome_board: bool;  - player1: Player;    - player2: Player;    - initialized: None; - lastPiecetypeMoved: None;    - difficulty: None;...|+initialize_board():None; +__initialize_states(): None;+ make_real_move(lastMove: Movement): None;+computer_move(player: Player): None;    + is_game_over(): bool;+ get_all_possible_movements(pieceType: Piece): None;  + best_move(player: Player): Movement; + get_score(piece: Piece): int; + best_min_max_movement(player: Player): Movement;+ get_winner(): str; ...]
+
+[Movement|pieceType;x:int;y:int| __init__(pieceType, x:int, y:int)]
+
+[Player| isHuman:bool| __init__(isHuman:bool)]
+
+[ScreenMediatorInterface]^-.-[Screen]
+[ScreenMediatorInterface]<-[MainScreenComponent]
+[ScreenMediatorInterface]<-[LoadScreenComponent]
+[ScreenMediatorInterface]<-[FileLoadScreenComponent]
+[ScreenMediatorInterface]<-[GameScreenComponent]
+[ScreenMediatorInterface]<-[FileSaverScreenComponent]
+[ScreenMediatorInterface]<-[EditorScreenComponent]
+[ScreenMediatorInterface]<-[ConfigScreenComponent]
+
+[MainScreenComponent]<-<>[Screen]
+[LoadScreenComponent]<-<>[Screen]
+[FileLoadScreenComponent]<-<>[Screen]
+[GameScreenComponent]<-<>[Screen]
+[FileSaverScreenComponent]<-<>[Screen]
+[EditorScreenComponent]<-<>[Screen]
+[ConfigScreenComponent]<-<>[Screen]
+
+[LoadScreenComponent]^-[Menu]
+[LoadScreenComponent]^-[Board]
+
+[FileLoadScreenComponent]^-[Menu]
+[FileLoadScreenComponent]^-[Board]
+[FileLoadScreenComponent]^-[Movement]
+[FileLoadScreenComponent]^-[Piece]
+[FileLoadScreenComponent]^-[Player]
+
+[GameScreenComponent]^-[Menu]
+[GameScreenComponent]^-[Board]
+[GameScreenComponent]^-[Movement]
+
+[FileSaverScreenComponent]^-[Menu]
+[FileSaverScreenComponent]^-[Board]
+[FileSaverScreenComponent]^-[Filename]
+[FileSaverScreenComponent]^-[Piece]
+
+[EditorScreenComponent]^-[Menu]
+[EditorScreenComponent]^-[Board]
+[EditorScreenComponent]^-[Piece]
+
+[ConfigScreenComponent]^-[Menu]
+[ConfigScreenComponent]^-[Board]
+[ConfigScreenComponent]^-[Piece]
+[ConfigScreenComponent]^-[Player]
+
+[Screen]->[Board]
+[Screen]->[Menu]
+[Screen]->[Filename]
+[Screen]->[Piece]
+
+[Game]^-[Filename]
+[Game]^-[Board]
+[Game]^-[Menu]
+[Game]^-[Piece]
+[Game]^-[Screen]
+
+
+[Board]->[Piece]
+[Board]->[Movement]
+[Board]->[Player]
+
+
