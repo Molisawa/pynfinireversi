@@ -112,7 +112,7 @@ class Game():
             self.__start_keys_review()
             
             begin_drawing()
-            
+            # This part could be considered a facade because it hides the complexity of the screen mediator
             self.screen_mediator.notify(self.mouse, self.clicked, self.filename, self.num_of_chars, self.frame_counter)
             
             end_drawing()

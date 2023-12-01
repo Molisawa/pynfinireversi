@@ -80,6 +80,7 @@ class MainScreenComponent():
                 15, WHITE) 
     
     def __check_menu_button_pressed(self)->None:
+        '''This method checks if the menu button was pressed'''
         clicked = is_mouse_button_pressed(0)
         mouse = get_mouse_position()
 

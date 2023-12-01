@@ -13,7 +13,7 @@ class ScreenMediatorInterface(ABC):
     def notify(self, event):
         pass
 
-# Mediator
+# Mediator concrete class
 class Screen(ScreenMediatorInterface):
     '''
     This class handles every section of the screen and allows us to draw all the graphic elements.
@@ -57,8 +57,6 @@ class Screen(ScreenMediatorInterface):
             self.__componentMainScreen.display_screen()
         elif self.screen_to_show == screen_specs.GAME_SCREEN:
             self.__componentGameScreen.display_screen()
-        elif self.screen_to_show == screen_specs.LOAD_SCREEN:
-            self.__componentLoadScreen.display_screen()
         elif self.screen_to_show == screen_specs.EDITOR_SCREEN:
             self.__componentEditorScreen.display_screen()
         elif self.screen_to_show == screen_specs.SAVE_SCREEN:
@@ -73,7 +71,6 @@ class Screen(ScreenMediatorInterface):
         import main_screen, game_screen, load_screen, editor_screen, file_saver, config_screen, load_file_screen
         self.__componentMainScreen = main_screen.MainScreenComponent(self)
         self.__componentGameScreen = game_screen.GameScreenComponent(self, self.board, self.menu_options)
-        self.__componentLoadScreen = load_screen.LoadScreenComponent(self, self.board, self.menu_options, self.slider)
         self.__componentEditorScreen = editor_screen.EditorScreenComponent(self, self.board, self.piece)
         self.__componentFileSaver = file_saver.FileSaverScreenComponent(self, self.board, self.menu_options, self.filename, 
                                                                         self.frame_count, self.num_of_chars)

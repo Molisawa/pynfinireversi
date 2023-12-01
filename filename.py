@@ -5,8 +5,6 @@ class Filename():
         self.text = ""
         self.num_of_chars = 0
 
-
-
     def get_instance(self):
         if self._filename is None:
             self._filename = Filename()
