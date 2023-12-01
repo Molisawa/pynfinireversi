@@ -1,5 +1,6 @@
 from __future__ import annotations
 import sys
+from filename import Filename
 
 from piece import Piece
 sys.path.append('./screens')
@@ -27,7 +28,7 @@ class Game():
         self.key = 0
         #########################
         self.num_of_chars = 0
-        self.filename = ""
+        self.filename = Filename()
         self.difficulty = screen_specs.Difficulty.EASY.value
         self.custom_board_size = 0
         #########################
@@ -66,18 +67,18 @@ class Game():
         '''
         # Check for key "8" 
         if is_key_pressed(self.key_pressed_reference):
-                self.num_of_chars -= 1
-                if self.num_of_chars < 0:
-                    self.num_of_chars = 0
+                self.filename.get_instance().num_of_chars -= 1
+                if self.filename.get_instance().num_of_chars < 0:
+                    self.filename.get_instance().num_of_chars = 0
                 self.filename = self.filename[:-1]
 
         # Get any pressed key
         self.key = get_key_pressed()
 
         # Ensure the range to change the filename
-        if self.key > 0 and 32 <= self.key <= 125 and self.num_of_chars < 10:
-            self.num_of_chars += 1
-            self.filename += chr(self.key)
+        if self.key > 0 and 32 <= self.key <= 125 and self.filename.get_instance().num_of_chars < 10:
+            self.filename.get_instance().num_of_chars += 1
+            self.filename.get_instance().text += chr(self.key)
 
     def __start_screen(self)->None:
         '''

@@ -118,6 +118,7 @@ class GameScreenComponent():
         draw_text(str(val), int(self.menu.save_game_button.x), int(self.menu.save_game_button.height + self.menu.save_game_button.y + 120), 20, WHITE)
     
     def check_piece_played(self)->None:
+        '''This method checks if a piece was played'''
         for i in range(self.board.size):
             for j in range(self.board.size):
                 vector = None
@@ -138,6 +139,7 @@ class GameScreenComponent():
                             self.__update_drawing_state()
 
     def __check_game_over(self)->None:
+        '''This method checks if the game is over'''
         if self.board.is_game_over():
             draw_text("Game Over", int((self.screen.square_size * self.board.size) / 2 - measure_text("Game Over", 80) / 2),
                     int(self.screen.screen_height / 2 - 40), 80, GRAY)
@@ -156,6 +158,7 @@ class GameScreenComponent():
                     int(self.screen.screen_height / 2 - 30 + 80 + 10), 60, color)
     
     def __draw_exit_button(self)->None:
+        '''This method draws the exit button'''
         margin = self.board.size * self.screen.square_size
         free_space = self.screen.screen_width - margin
         exit_rect = Rectangle(int(margin + 30), int(self.screen.screen_height - 150), int((free_space - 60)), 100)

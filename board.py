@@ -418,6 +418,8 @@ class Board():
         # when all hopes fade away
         return False
     
+    # Aplicamos una fachada en esta parte para los movimientos reales. Esto combina otros metodos complejos
+    # como asegurar que el movimiento sea posible en primera lugar. 
     def computer_move(self, player: Player)->None:
         '''This method makes a computer move'''
         random.seed(time.time())

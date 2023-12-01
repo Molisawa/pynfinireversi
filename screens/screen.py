@@ -1,5 +1,6 @@
 from pyray import *
 from Menu import Menu
+from filename import Filename
 from piece import Piece
 import specs as screen_specs
 from board import Board
@@ -20,7 +21,7 @@ class Screen(ScreenMediatorInterface):
     '''
     def __init__(self, board:Board, frame_count: int, menu_options: Menu, 
                  screen_flag: bool, slider: screen_specs.Slider, selected_piece: Piece,
-                 filename: str, num_of_chars: int, clicked: bool, mouse: tuple, custom_board_size: int,
+                 filename: Filename, num_of_chars: int, clicked: bool, mouse: tuple, custom_board_size: int,
                  difficulty: screen_specs.Difficulty) -> None:
         '''
         This constructor asks for the following:
