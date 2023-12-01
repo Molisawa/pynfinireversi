@@ -13,6 +13,9 @@ MAIN_SCREEN = 1
 GAME_SCREEN = 2
 LOAD_SCREEN = 3
 EDITOR_SCREEN = 4
+SAVE_SCREEN = 5
+CONFIG_SCREEN = 6
+LOAD_FILE_SCREEN = 7
 
 # Board constants
 BOARD_SIZE = 6
@@ -42,6 +45,16 @@ class StateFlags(Enum):
     BLACK_PIECE = PlayerType.BLACK_PLAYER.value
     WHITE_PIECE = PlayerType.WHITE_PLAYER.value
     HELPER = 3
+
+class Winners(Enum):
+    WINNER = 0
+    LOSER = 1
+    TIE = 2
+
+class Difficulty(Enum):
+    EASY = 0
+    INTERMEDIATE = 1
+    HARD = 2
 
 @dataclass
 class DirectoryEntry:

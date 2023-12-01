@@ -25,22 +25,24 @@ class Game():
         self.mouse = None
         self.clicked = False
         self.key = 0
+        #########################
         self.num_of_chars = 0
         self.filename = ""
+        self.difficulty = screen_specs.Difficulty.EASY.value
+        self.custom_board_size = 0
+        #########################
         self.key_pressed_reference = 8
         self.screen_mediator = None
         self.menu_options = None
         self.slider = screen_specs.Slider(False, 0.0, 0.0)
         self.selected_piece = Piece(screen_specs.PlayerType.BLACK_PLAYER.value)
 
-
-
     def __start_music(self)->None:
         '''
         Method to start the music track
         '''
         init_audio_device()
-        self.music = load_music_stream("resources/background.mp3")
+        self.music = load_music_stream("./resources/background.mp3")
         play_music_stream(self.music)
     
     def __start_mouse_and_frame_counter(self)->None:
@@ -55,6 +57,8 @@ class Game():
 
         if is_mouse_button_pressed(0):
             self.clicked = True
+        else:
+            self.clicked = False
 
     def __start_keys_review(self)->None:
         '''
@@ -71,9 +75,9 @@ class Game():
         self.key = get_key_pressed()
 
         # Ensure the range to change the filename
-        if self.key > 0 and 32 <= self.key <= 125 and num_of_chars < 10:
-            num_of_chars += 1
-            filename += chr(self.key)
+        if self.key > 0 and 32 <= self.key <= 125 and self.num_of_chars < 10:
+            self.num_of_chars += 1
+            self.filename += chr(self.key)
 
     def __start_screen(self)->None:
         '''
@@ -83,7 +87,12 @@ class Game():
         self.window = init_window(screen_specs.SCREEN_WIDTH, screen_specs.SCREEN_HEIGHT, "Reversi")
         set_target_fps(60)
         self.menu_options = Menu(self.board)
-        self.screen_mediator = Screen(self.board, self.frame_counter, self.menu_options, True, self.slider, self.selected_piece)
+        self.screen_mediator = Screen(self.board, self.frame_counter, 
+                                      self.menu_options, True, self.slider, 
+                                      self.selected_piece, self.filename,
+                                      self.num_of_chars, self.clicked,
+                                      self.mouse, self.custom_board_size, 
+                                      self.difficulty)
 
     def __init_slider(self)->None:
         self.slider.collision = False
@@ -96,12 +105,14 @@ class Game():
         self.__start_screen()
         
         while not window_should_close():
+            draw_fps(10, 10)
+            # update_music_stream(self.music)
             self.__start_mouse_and_frame_counter()
             self.__start_keys_review()
             
             begin_drawing()
             
-            self.screen_mediator.notify()
+            self.screen_mediator.notify(self.mouse, self.clicked, self.filename, self.num_of_chars)
             
             end_drawing()
         

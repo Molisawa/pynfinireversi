@@ -73,8 +73,9 @@ class MainScreenComponent():
         mouse = get_mouse_position()
 
         if clicked and check_collision_point_rec(mouse, self.screen.menu_options.start_game_button):
-            self.screen.screen_to_show = screen_specs.GAME_SCREEN
+            self.screen.screen_to_show = screen_specs.CONFIG_SCREEN
         elif clicked and check_collision_point_rec(mouse, self.screen.menu_options.load_game_button):
-            self.screen.screen_to_show = screen_specs.LOAD_SCREEN
+            self.screen.screen_to_show = screen_specs.LOAD_FILE_SCREEN
         elif clicked and check_collision_point_rec(mouse, self.screen.menu_options.editor_button):
-            self.screen.screen_to_show = screen_specs.EDITOR_SCREEN
+            self.screen.creating_new_board = True
+            self.screen.screen_to_show = screen_specs.CONFIG_SCREEN
