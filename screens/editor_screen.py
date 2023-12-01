@@ -135,12 +135,18 @@ class EditorScreenComponent():
     def __draw_colliding_pieces(self)->None:
         '''This method draws the colliding pieces'''	
         if check_collision_point_rec(self.screen.mouse, self.helper_rect) and self.screen.clicked:
-            self.board.state[self.x][self.y].pieceType = screen_specs.PlayerType.BLACK_PLAYER.value if self.is_black else screen_specs.PlayerType.WHITE_PLAYER.value
-            self.board.initialState[self.x][self.y].pieceType = screen_specs.PlayerType.BLACK_PLAYER.value if self.is_black else screen_specs.PlayerType.WHITE_PLAYER.value
-
+            try:
+                self.board.state[self.x][self.y].pieceType = screen_specs.PlayerType.BLACK_PLAYER.value if self.is_black else screen_specs.PlayerType.WHITE_PLAYER.value
+                self.board.initialState[self.x][self.y].pieceType = screen_specs.PlayerType.BLACK_PLAYER.value if self.is_black else screen_specs.PlayerType.WHITE_PLAYER.value
+            except:
+                pass
+            
         if check_collision_point_rec(self.screen.mouse, self.helper_rect) and (is_mouse_button_pressed(1) or is_mouse_button_down(1)):
-            self.board.state[self.x][self.y].pieceType = screen_specs.StateFlags.VOID.value
-            self.board.initialState[self.x][self.y].pieceType = screen_specs.StateFlags.VOID.value
+            try:
+                self.board.state[self.x][self.y].pieceType = screen_specs.StateFlags.VOID.value
+                self.board.initialState[self.x][self.y].pieceType = screen_specs.StateFlags.VOID.value
+            except:
+                pass
     
     def __draw_final_rectangles(self)->None:
         '''This method draws the final rectangles'''
