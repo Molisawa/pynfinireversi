@@ -1,67 +1,174 @@
 import math
 from pyray import *
-from engine import *
-from graphic_classes import *
-from graphic_utils.update_drawing_state import *
-from graphic_utils.draw_board_grid import *
+from Menu import Menu
+from board import Board
+from piece import Piece
+from screens.screen import Screen
+import specs as screen_specs
+import os
 
-def EditorScreen(screenFeatures: ScreenFeatures, board: Board, piece: Piece, screen_list):
-    clear_background(DARKGREEN)
-    DrawBoardGrid(board, screenFeatures)
-    margin = board.size * screenFeatures.squareSize
-    free_space = screenFeatures.screenWidth - margin
-    radius = free_space / 4
-    black = Vector2(2 * radius + margin, 50 + radius)
-    white = Vector2(black.x, 50 + black.y + 2 * radius)
-    draw_circle_v(black, radius, BLACK)
-    draw_circle_v(white, radius, WHITE)
-    is_black = piece.pieceType == PlayerType.BLACK_PLAYER.value
-    draw_circle_v(black if is_black else white, radius // 10, RED)
+class EditorScreenComponent():
+    def __init__(self, screen: Screen, board: Board, piece: Piece) -> None:
+        self.screen = screen
+        self.board = board
+        self.piece = piece
+        self.is_black = piece.pieceType == screen_specs.PlayerType.BLACK_PLAYER.value
 
-    mouse = get_mouse_position()
-    clicked = is_mouse_button_pressed(0)
+    def display_screen(self)->None:
+        '''This method displays the screen'''
+        self.__draw()
+    
+    def __draw(self):
+        self.__draw_background()
+        self.__draw_board_grid()
+        self.__calculate_measures()
+        self.__draw_initial_pieces()
+        self.__update_drawing_state()
+        self.__check_for_drawing()
+        self.__draw_final_rectangles()
+        self.__check_final_user_inputs()
 
-    UpdateDrawingState(board, screenFeatures)
-    if 0 <= mouse.x < margin and 0 <= mouse.x < screenFeatures.screenHeight:
-        clicked = is_mouse_button_down(0)
-        x = math.floor(mouse.x / screenFeatures.squareSize)
-        y = math.floor(mouse.y / screenFeatures.squareSize)
-        helper = Vector2(x * screenFeatures.squareSize + radius, y * screenFeatures.squareSize + radius)
+    def __draw_background(self)->None:
+        '''This method draws the background of the screen'''
+        clear_background(DARKGREEN)
 
-        helper_rect = Rectangle(helper.x + 1 - radius, helper.y + 1 - radius, screenFeatures.squareSize - 2, screenFeatures.squareSize - 2)
-        draw_rectangle_rec(helper_rect, DARKGREEN)
+    def __draw_board_grid(self)->None:
+        '''This method draws the board grid'''
+        # Horizontal lines
+        for i in range(self.board.size + 1):
+            draw_line_v((int(self.screen.square_size * i), 0), (int(self.screen.square_size * i), int(self.board.size * self.screen.square_size)), BLACK)
 
-        circle = Vector2(x * screenFeatures.squareSize + screenFeatures.squareSize / 2, y * screenFeatures.squareSize + screenFeatures.squareSize / 2)
+        # Vertical lines
+        for i in range(self.board.size + 1):
+            draw_line_v((0, int(self.screen.square_size * i)), (int(self.board.size * self.screen.square_size), int(self.screen.square_size * i)), BLACK)
 
-        if piece.pieceType == PlayerType.BLACK_PLAYER.value:
-            draw_circle_v(circle, screenFeatures.squareSize / 2 - 5, fade(BLACK, 0.5))
-        elif piece.pieceType == PlayerType.WHITE_PLAYER.value:
-            draw_circle_v(circle, screenFeatures.squareSize / 2 - 5, fade(WHITE, 0.5))
+        # Points and pieces selection
+        draw_rectangle(int(self.board.size * self.screen.square_size) + 1, 0, int(self.screen.screen_width - 1), int(self.screen.screen_height), WHITE) # Right rectangles
+        draw_rectangle(int(self.board.size * self.screen.square_size) + 1, 0, int(self.screen.screen_width - 1), int(self.screen.screen_height), fade(DARKGREEN, 0.5))
+    
+    def __calculate_measures(self)->None:
+        self.margin = self.board.size * self.screen.square_size
+        self.free_space = self.screen.screen_width- self.margin
+        self.radius = self.free_space / 4
+        self.black = Vector2(2 * self.radius + self.margin, 50 + self.radius)
+        self.white = Vector2(self.black.x, 50 + self.black.y + 2 * self.radius)
+        self.is_black = self.piece.pieceType == screen_specs.PlayerType.BLACK_PLAYER.value
 
-        if check_collision_point_rec(mouse, helper_rect) and clicked:
-            board.state[x][y].pieceType = PlayerType.BLACK_PLAYER.value if is_black else PlayerType.WHITE_PLAYER.value
-            board.initialState[x][y].pieceType = PlayerType.BLACK_PLAYER.value if is_black else PlayerType.WHITE_PLAYER.value
+    
+    def __draw_initial_pieces(self)->None:
+        '''This method draws the initial pieces'''
+        draw_circle_v(self.black, self.radius, BLACK)
+        draw_circle_v(self.white, self.radius, WHITE)
+        draw_circle_v(self.black if self.is_black else self.white, self.radius // 10, RED)
 
-        if check_collision_point_rec(mouse, helper_rect) and (is_mouse_button_pressed(1) or is_mouse_button_down(1)):
-            board.state[x][y].pieceType = StateFlags.VOID.value
-            board.initialState[x][y].pieceType = StateFlags.VOID.value
+        
+    
+    def __update_drawing_state(self)->None:
+        self.offset = int((self.screen.square_size / 2 - 5) * 0.25)
+        for i in range(self.board.size):
+            for j in range(self.board.size):
+                if self.board.state[i][j].pieceType == screen_specs.StateFlags.VOID.value:
+                    pass
+                if self.board.state[i][j].pieceType == screen_specs.StateFlags.BLACK_PIECE.value: # Black piece drawing
+                    self.__draw_black_pieces(i, j)
+                elif self.board.state[i][j].pieceType == screen_specs.StateFlags.WHITE_PIECE.value: # White piece drawing
+                    self.__draw_white_pieces(i, j)
+                elif self.board.state[i][j].pieceType == screen_specs.StateFlags.HELPER.value: # Helper piece drawing
+                    self.__draw_helper_pieces(i, j)
+    
+    def __draw_black_pieces(self, i: int, j: int)->None:
+        '''This method draws the black pieces'''
+        draw_circle(int(i * self.screen.square_size + self.screen.square_size / 2),
+                int(j * self.screen.square_size + self.screen.square_size / 2),
+                int(self.screen.square_size / 2 - 5), BLACK)
+        draw_circle_gradient(int(i * self.screen.square_size + self.screen.square_size / 2 - self.offset),
+                            int(j * self.screen.square_size + self.screen.square_size / 2 - self.offset),
+                            int((self.screen.square_size / 2 - 5) * 0.5), fade(WHITE, 0.15), fade(WHITE, 0))
+    
+    def __draw_white_pieces(self, i: int, j: int)->None:
+        '''This method draws the white pieces'''
+        draw_circle(int(i * self.screen.square_size + self.screen.square_size / 2),
+                int(j * self.screen.square_size + self.screen.square_size / 2),
+                int(self.screen.square_size / 2 - 5), RAYWHITE)
+        draw_circle_gradient(int(i * self.screen.square_size + self.screen.square_size / 2 - self.offset),
+                            int(j * self.screen.square_size + self.screen.square_size / 2 - self.offset),
+                            int((self.screen.square_size / 2 - 5) * 0.5), fade(BLACK, 0.15), fade(BLACK, 0))
+    
+    def __draw_helper_pieces(self, i: int, j: int)->None:
+        '''This method draws the helper pieces'''
+        print("Drawing helper pieces")
+        draw_circle(int(i * self.screen.square_size + self.screen.square_size / 2),
+                            int(j * self.screen.square_size + self.screen.square_size / 2),
+                            int(self.screen.square_size / 2 - 5), DARKGRAY)
+        draw_circle(int(i * self.screen.square_size + self.screen.square_size / 2),
+                int(j * self.screen.square_size + self.screen.square_size / 2),
+                int(self.screen.square_size / 2 - 7), DARKGREEN)
+        
+    
+    def __check_for_drawing(self)->None:
+        '''This method checks for drawing'''	
+        if 0 <= self.screen.mouse.x < self.margin and 0 <= self.screen.mouse.x < self.screen.screen_height:
+            self.screen.clicked = is_mouse_button_down(0)
+            self.__get_calculated_data()
+            self.__draw_pieces()
+            self.__draw_colliding_pieces()
 
-    exit_rect = Rectangle(int(margin + 30), int(screenFeatures.screenHeight - 150), int((free_space - 60)), 100)
-    draw_rectangle_rec(exit_rect, LIGHTGRAY)
-    draw_text("Exit", int(exit_rect.x + exit_rect.width / 2 - measure_text("Exit", 30) / 2), int(exit_rect.y + exit_rect.height / 2 - 15), 30, WHITE)
+    def __get_calculated_data(self)->None:
+        '''This method gets the calculated date'''	
+        self.x = math.floor(self.screen.mouse.x / self.screen.square_size)
+        self.y = math.floor(self.screen.mouse.y / self.screen.square_size)
+        self.helper = Vector2(self.x * self.screen.square_size + self.radius, self.y * self.screen.square_size + self.radius)
 
-    save_rect = Rectangle(int(margin + 30), int(exit_rect.y - exit_rect.height - 50), int((free_space - 60)), 100)
-    draw_rectangle_rec(save_rect, LIGHTGRAY)
-    draw_text("Save", int(save_rect.x + save_rect.width / 2 - measure_text("Save", 30) / 2), int(save_rect.y + save_rect.height / 2 - 15), 30, WHITE)
+        self.helper_rect = Rectangle(self.helper.x + 1 - self.radius, self.helper.y + 1 - self.radius, self.screen.square_size - 2, self.screen.square_size - 2)
 
-    if clicked and check_collision_point_circle(mouse, black, radius):
-        piece.pieceType = PlayerType.BLACK_PLAYER.value
-    if clicked and check_collision_point_circle(mouse, white, radius):
-        piece.pieceType = PlayerType.WHITE_PLAYER.value
+        self.circle = Vector2(self.x * self.screen.square_size + self.screen.square_size / 2, self.y * self.screen.square_size + self.screen.square_size / 2)
+        draw_rectangle_rec(self.helper_rect, DARKGREEN)
 
-    if clicked and check_collision_point_rec(mouse, save_rect):
-        screen_list[0] = ScreenFlag.SAVE
 
-    if clicked and check_collision_point_rec(mouse, exit_rect):
-        destructBoard(board)
-        screen_list[0] = ScreenFlag.MENU
+    def __draw_pieces(self)->None:
+        '''This method draws the pieces'''
+        if self.piece.pieceType == screen_specs.PlayerType.BLACK_PLAYER.value:
+            draw_circle_v(self.circle, self.screen.square_size / 2 - 5, fade(BLACK, 0.5))
+        elif self.piece.pieceType == screen_specs.PlayerType.WHITE_PLAYER.value:
+            draw_circle_v(self.circle, self.screen.square_size / 2 - 5, fade(WHITE, 0.5))
+
+    def __draw_colliding_pieces(self)->None:
+        '''This method draws the colliding pieces'''	
+        if check_collision_point_rec(self.screen.mouse, self.helper_rect) and self.screen.clicked:
+            try:
+                self.board.state[self.x][self.y].pieceType = screen_specs.PlayerType.BLACK_PLAYER.value if self.is_black else screen_specs.PlayerType.WHITE_PLAYER.value
+                self.board.initialState[self.x][self.y].pieceType = screen_specs.PlayerType.BLACK_PLAYER.value if self.is_black else screen_specs.PlayerType.WHITE_PLAYER.value
+            except:
+                pass
+            
+        if check_collision_point_rec(self.screen.mouse, self.helper_rect) and (is_mouse_button_pressed(1) or is_mouse_button_down(1)):
+            try:
+                self.board.state[self.x][self.y].pieceType = screen_specs.StateFlags.VOID.value
+                self.board.initialState[self.x][self.y].pieceType = screen_specs.StateFlags.VOID.value
+            except:
+                pass
+    
+    def __draw_final_rectangles(self)->None:
+        '''This method draws the final rectangles'''
+        self.exit_rect = Rectangle(int(self.margin + 30), int(self.screen.screen_height - 150), int((self.free_space - 60)), 100)
+        draw_rectangle_rec(self.exit_rect, LIGHTGRAY)
+        draw_text("Exit", int(self.exit_rect.x + self.exit_rect.width / 2 - measure_text("Exit", 30) / 2), int(self.exit_rect.y + self.exit_rect.height / 2 - 15), 30, WHITE)
+
+        self.save_rect = Rectangle(int(self.margin + 30), int(self.exit_rect.y - self.exit_rect.height - 50), int((self.free_space - 60)), 100)
+        draw_rectangle_rec(self.save_rect, LIGHTGRAY)
+        draw_text("Save", int(self.save_rect.x + self.save_rect.width / 2 - measure_text("Save", 30) / 2), int(self.save_rect.y + self.save_rect.height / 2 - 15), 30, WHITE)
+    
+    def __check_final_user_inputs(self)->None:
+        '''This method checks for the final user inputs'''
+        if self.screen.clicked and check_collision_point_circle(self.screen.mouse, self.black, self.radius):
+            self.piece.pieceType = screen_specs.PlayerType.BLACK_PLAYER.value
+        if self.screen.clicked and check_collision_point_circle(self.screen.mouse, self.white, self.radius):
+            self.piece.pieceType = screen_specs.PlayerType.WHITE_PLAYER.value
+
+        if self.screen.clicked and check_collision_point_rec(self.screen.mouse, self.save_rect):
+            self.screen.screen_to_show = screen_specs.SAVE_SCREEN
+            
+        if self.screen.clicked and check_collision_point_rec(self.screen.mouse, self.exit_rect):
+            # del self.board
+            self.screen.screen_to_show = screen_specs.MAIN_SCREEN
+    
